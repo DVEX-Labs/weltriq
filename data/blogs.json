@@ -1,0 +1,89 @@
+[
+  {
+    "id": "8f644146-7a0f-45b5-9f0d-0faf2231f014",
+    "title": "Secret Draft: Roofing Innovation in 2027",
+    "slug": "secret-draft-roofing-innovation-in-2027",
+    "excerpt": "This is an unpublished draft discussing future roofing technologies.",
+    "coverImage": "/images/refined/commercial_roofing_card.webp",
+    "coverImageAlt": "Secret Draft: Roofing Innovation in 2027",
+    "content": "## Future Tech\n\nThis article is private draft content.",
+    "category": "Material Guides",
+    "tags": ["Innovation", "Future"],
+    "status": "draft",
+    "author": {
+      "name": "WELTRIQ Technical Team",
+      "role": "Roofing Specialist"
+    },
+    "readingTimeMinutes": 1,
+    "seoTitle": "Secret Draft: Roofing Innovation in 2027",
+    "seoDescription": "This is an unpublished draft discussing future roofing technologies.",
+    "createdAt": "2026-10-11T14:59:12.124Z",
+    "updatedAt": "2026-10-11T14:59:12.124Z"
+  },
+  {
+    "id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+    "title": "Choosing the Right Metal Roofing in Kerala",
+    "slug": "choosing-the-right-metal-roofing-in-kerala",
+    "excerpt": "An architectural guide to selecting durable metal roofing sheets built for tropical rainfall, high humidity, and coastal climates.",
+    "coverImage": "/images/refined/metal_roofing_card.webp",
+    "coverImageAlt": "Modern metal roofing installation on contemporary architectural home",
+    "content": "## Climatic Challenges in Kerala Roofing\n\nKerala experiences over 3,000 mm of annual rainfall alongside high atmospheric humidity and saline coastal winds. Standard steel profiles without advanced galvanic barriers often suffer from corrosion or micro-fissuring within a few monsoons.\n\n### Material Specifications for Longevity\n\n- **Galvalume Alloys (AZ150):** 55% Aluminum-Zinc alloy coatings provide superior sacrificial cut-edge protection.\n- **Base Metal Thickness (BMT):** For residential and commercial spans in Kerala, specify 0.45mm to 0.50mm BMT to prevent thermal drumming and wind-uplift deflection.\n- **Class 3 / Class 4 Fasteners:** Carbon steel screws with thick mechanical zinc plating and EPDM washers protect against water capillary ingress.\n\n> Always insist on continuous ridge capping and precision gutter sizing to handle peak monsoon runoff volumes safely without overflow into the building envelope.\n\n## Professional Installation Matters\n\nEven premium materials fail if trusses are misaligned or lap joints lack sealant. Professional structural assessment ensures rafter spacing and purlin gauges match the chosen sheet profile exactly.",
+    "category": "Material Guides",
+    "tags": ["Metal Roofing", "Kerala Architecture", "Weatherproofing"],
+    "status": "published",
+    "author": {
+      "name": "WELTRIQ Technical Team",
+      "role": "Chief Structural Engineer"
+    },
+    "readingTimeMinutes": 3,
+    "seoTitle": "Choosing the Right Metal Roofing in Kerala | WELTRIQ Guides",
+    "seoDescription": "Architectural guide to selecting durable metal roofing sheets for tropical climates and coastal rainfall in Kerala.",
+    "publishedAt": "2026-10-11T14:00:00.000Z",
+    "createdAt": "2026-10-11T14:00:00.000Z",
+    "updatedAt": "2026-10-11T14:00:00.000Z"
+  },
+  {
+    "id": "2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
+    "title": "UPVC vs Clay Tile Roofing: Engineering Analysis",
+    "slug": "upvc-vs-clay-tile-roofing-engineering-analysis",
+    "excerpt": "A technical performance comparison between modern multi-layer UPVC profiles and traditional clay tiles for Kerala residences.",
+    "coverImage": "/images/refined/upvc_roofing_card.webp",
+    "coverImageAlt": "UPVC roofing panel profile with multi-layer acoustic barrier",
+    "content": "## Evaluating Roof Profiles for Tropical Homes\n\nTraditional clay tiles have defined Kerala's domestic architecture for centuries, while co-extruded UPVC panels represent modern polymers designed for acoustic insulation and corrosion immunity.\n\n### Core Engineering Differences\n\n1. **Structural Dead Load:** Traditional clay tiles weigh approximately 45–55 kg/m², necessitating heavy timber or steel truss support. UPVC panels weigh only 4.5–6 kg/m², significantly reducing superstructure dead weight.\n2. **Thermal Resistance:** Clay tiles naturally absorb and release heat with substantial thermal mass. Modern 3-layer UPVC uses a foamed PVC core delivering excellent sound deadening and heat reflection.\n3. **Moss and Algae Resistance:** Clay tiles are porous and require periodic pressure washing in wet climates. UPVC's impervious surface prevents biological adhesion.\n\n> When renovating heritage properties with existing timber frameworks, structural engineers often recommend lightweight UPVC to relieve structural stress while retaining aesthetic character.",
+    "category": "Technical Insights",
+    "tags": ["UPVC", "Clay Tile", "Engineering"],
+    "status": "published",
+    "author": {
+      "name": "WELTRIQ Technical Team",
+      "role": "Materials Specialist"
+    },
+    "readingTimeMinutes": 4,
+    "seoTitle": "UPVC vs Clay Tile Roofing: Engineering Analysis | WELTRIQ",
+    "seoDescription": "Comparing structural dead load, thermal behavior, and maintenance requirements between UPVC and clay tiles.",
+    "publishedAt": "2026-10-10T10:00:00.000Z",
+    "createdAt": "2026-10-10T10:00:00.000Z",
+    "updatedAt": "2026-10-10T10:00:00.000Z"
+  },
+  {
+    "id": "3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
+    "title": "Monsoon Roof Maintenance: 5 Critical Inspection Steps",
+    "slug": "monsoon-roof-maintenance-5-critical-inspection-steps",
+    "excerpt": "Essential pre-monsoon inspection protocols to prevent leaks, structural dampness, and gutter overflow during heavy tropical rains.",
+    "coverImage": "/images/refined/roof_renovation_card.webp",
+    "coverImageAlt": "Roof renovation and flashing inspection in progress",
+    "content": "## Pre-Monsoon Preparedness Protocol\n\nHeavy tropical monsoon downpours quickly exploit hairline roof fissures, clogged downspouts, and aged valley flashings. Implementing a proactive 5-step checklist ensures your building envelope remains water-tight.\n\n### The 5-Step Inspection Checklist\n\n- **1. Clear Valley Gutters and Downspouts:** Debris and dried foliage restrict rapid water exit, causing hydrostatic pressure back-flow under sheet laps.\n- **2. Inspect Fastener Washers:** Over time, ultraviolet exposure degrades rubber washers. Replace brittle washers with weather-rated EPDM seals.\n- **3. Check Parapet and Wall Flashings:** Wall junctions require high-performance silicone or polyurethane sealants to prevent seepage behind vertical plaster.\n- **4. Examine Trusses for Deflection:** Inspect structural purlins for moisture stains or timber rot.\n- **5. Verify Ridge Cap Overlaps:** Ensure ridge caps maintain at least 150mm overlap in prevailing wind directions.\n\n> Timely pre-monsoon maintenance costs a fraction of post-leak ceiling and electrical repairs.",
+    "category": "Maintenance & Care",
+    "tags": ["Maintenance", "Monsoon", "Inspection"],
+    "status": "published",
+    "author": {
+      "name": "WELTRIQ Technical Team",
+      "role": "Operations Manager"
+    },
+    "readingTimeMinutes": 3,
+    "seoTitle": "Monsoon Roof Maintenance Checklist | WELTRIQ Solutions",
+    "seoDescription": "5 essential pre-monsoon roof inspection steps to safeguard Kerala homes against severe rainfall and moisture leaks.",
+    "publishedAt": "2026-10-09T08:00:00.000Z",
+    "createdAt": "2026-10-09T08:00:00.000Z",
+    "updatedAt": "2026-10-09T08:00:00.000Z"
+  }
+]
