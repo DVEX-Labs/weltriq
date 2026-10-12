@@ -85,10 +85,17 @@ export function Navbar() {
   }, [isOpen]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-brand-navy/5 bg-brand-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full">
+      {/* Background layer with blur and border separated to prevent fixed containment trap */}
+      <div className="absolute inset-0 -z-10 border-b border-brand-navy/5 bg-brand-white/95 backdrop-blur-md pointer-events-none" />
+
       <Container>
         <div className="flex h-20 items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2 z-50 relative">
+          <Link 
+            href="/" 
+            className="flex items-center space-x-2 z-50 relative"
+            onClick={() => setIsOpen(false)}
+          >
             <span className="font-display text-2xl font-bold uppercase tracking-tight text-brand-navy">
               Weltriq
             </span>
@@ -152,6 +159,7 @@ export function Navbar() {
                   key={link.name} 
                   href={link.href}
                   aria-current={isActive ? "page" : undefined}
+                  onClick={() => setIsOpen(false)}
                   className={`text-2xl font-display uppercase tracking-wide transition-colors ${
                     isActive ? "text-brand-yellow font-bold" : "text-brand-navy hover:text-brand-yellow"
                   }`}
@@ -161,8 +169,8 @@ export function Navbar() {
               );
             })}
           </nav>
-          <div className="mt-8 border-t border-brand-navy/10 pt-8">
-            <Button variant="primary" size="lg" className="w-full" asChild>
+          <div className="mt-8 border-t border-brand-navy/10 pt-8 pb-12">
+            <Button variant="primary" size="lg" className="w-full" asChild onClick={() => setIsOpen(false)}>
               <Link href="/contact">Get a Quote</Link>
             </Button>
           </div>

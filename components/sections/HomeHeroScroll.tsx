@@ -51,41 +51,11 @@ function drawCoverImage(
   );
 }
 
-/**
- * Maps scroll progress (0.0 - 1.0) to frame index (0 - 119)
- * - 0.00 -> 0.18: Serene house at twilight (Frames 0 -> 27)
- * - 0.18 -> 0.32: Monsoon storm gathering & dramatic lightning bolt (Frames 28 -> 30 with expanded presence)
- * - 0.32 -> 0.88: Heavy rain on standing seam roof panels & macro water beading (Frames 31 -> 119)
- * - 0.88 -> 1.00: Holding cushion on the final macro frame before unpinning
- */
-function getFrameFromProgress(progress: number): number {
-  const clamped = Math.min(1, Math.max(0, progress / 0.88));
-
-  if (clamped <= 0.18) {
-    const t = clamped / 0.18;
-    return Math.min(27, Math.max(0, Math.round(t * 27)));
-  }
-
-  if (clamped <= 0.32) {
-    const t = (clamped - 0.18) / 0.14; // 0.0 -> 1.0 across the 14% lightning window
-    if (t < 0.25) return 28; // Gathering storm clouds
-    if (t < 0.75) return 29; // Full brilliant lightning bolt strike held clearly
-    return 30; // Lightning afterglow & strike arc
-  }
-
-  // 0.32 -> 1.0 maps to remaining frames 31 -> 119
-  const t = (clamped - 0.32) / 0.68;
-  return Math.min(TOTAL_FRAMES - 1, Math.max(31, Math.round(31 + t * (TOTAL_FRAMES - 1 - 31))));
-}
-
 export function HomeHeroScroll() {
   const trackRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
-  const lightningFlashRef = useRef<HTMLDivElement>(null);
-  const multiplyOverlayRef = useRef<HTMLDivElement>(null);
-  const lastFlashTimeRef = useRef(0);
 
   const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
   const currentFrameRef = useRef(0);
@@ -196,34 +166,15 @@ export function HomeHeroScroll() {
       scrub: 0.5,
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        // 1. Calculate frame index with expanded lightning presence and cushion hold
-        const frameIndex = getFrameFromProgress(self.progress);
+        // 0.0 -> 0.88 maps smoothly across frames 0 -> TOTAL_FRAMES - 1; 0.88 -> 1.0 provides a cushion hold on the final frame
+        const animProgress = Math.min(1, Math.max(0, self.progress / 0.88));
+        const frameIndex = Math.min(
+          TOTAL_FRAMES - 1,
+          Math.max(0, Math.round(animProgress * (TOTAL_FRAMES - 1)))
+        );
         renderFrame(frameIndex);
 
-        // 2. Dynamic atmospheric lightning flash burst (cooldown protected)
-        if (self.progress >= 0.18 && self.progress <= 0.32) {
-          const now = Date.now();
-          if (now - lastFlashTimeRef.current > 2500) {
-            lastFlashTimeRef.current = now;
-            if (lightningFlashRef.current) {
-              gsap.killTweensOf(lightningFlashRef.current);
-              gsap
-                .timeline()
-                .to(lightningFlashRef.current, { opacity: 0.65, duration: 0.05, ease: "power2.out" })
-                .to(lightningFlashRef.current, { opacity: 0.08, duration: 0.04 })
-                .to(lightningFlashRef.current, { opacity: 0.45, duration: 0.06 })
-                .to(lightningFlashRef.current, { opacity: 0, duration: 0.28, ease: "power2.in" });
-            }
-          }
-        }
-
-        // 3. Fade out dark navy multiply overlay so lightning and storm display with 100% raw brightness
-        if (multiplyOverlayRef.current) {
-          const overlayFade = Math.min(1, Math.max(0, (self.progress - 0.04) / 0.14));
-          multiplyOverlayRef.current.style.opacity = String(1 - overlayFade);
-        }
-
-        // 4. Fade out text overlay cleanly before the storm
+        // Fade out text overlay cleanly before the storm
         if (contentRef.current) {
           const fadeProgress = Math.min(1, Math.max(0, (self.progress - 0.04) / 0.14));
           const opacity = 1 - fadeProgress;
@@ -233,7 +184,7 @@ export function HomeHeroScroll() {
           contentRef.current.style.pointerEvents = opacity < 0.1 ? "none" : "auto";
         }
 
-        // 5. Hide scroll indicator on first scroll
+        // Hide scroll indicator on first scroll
         if (scrollIndicatorRef.current) {
           const indOpacity = Math.max(0, 1 - self.progress * 8);
           scrollIndicatorRef.current.style.opacity = String(indOpacity);
@@ -256,18 +207,8 @@ export function HomeHeroScroll() {
           className="absolute inset-0 w-full h-full block pointer-events-none z-0"
         />
 
-        {/* Dynamic Atmospheric Lightning Flash Burst */}
-        <div
-          ref={lightningFlashRef}
-          className="absolute inset-0 bg-white/45 pointer-events-none z-1 opacity-0 mix-blend-screen will-change-transform"
-          aria-hidden="true"
-        />
-
         {/* Cinematic Navy Gradient Overlays */}
-        <div
-          ref={multiplyOverlayRef}
-          className="absolute inset-0 bg-brand-navy/35 mix-blend-multiply pointer-events-none z-1"
-        />
+        <div className="absolute inset-0 bg-brand-navy/35 mix-blend-multiply pointer-events-none z-1" />
         <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/90 via-brand-navy/20 to-transparent pointer-events-none z-1" />
 
         {/* Static Fallback Image while loading */}
