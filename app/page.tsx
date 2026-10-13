@@ -33,9 +33,9 @@ export default function HomePage() {
         </Container>
       </Section>
 
+      <WhyWeltriq />
       <ServicesShowcase services={homeServices} showViewAll />
       <Process />
-      <WhyWeltriq />
       <WeltriqPromise />
       <AboutPreview />
       <HomeBlogSection />
