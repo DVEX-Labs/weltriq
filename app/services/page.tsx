@@ -3,8 +3,6 @@ import { Metadata } from "next";
 import { ServiceHero } from "@/components/sections/services/ServiceHero";
 import { ServicesShowcase } from "@/components/sections/services/ServicesShowcase";
 import { servicesPageServices } from "@/data/services";
-import { ProjectTypes } from "@/components/sections/services/ProjectTypes";
-import { WhyWeltriq } from "@/components/sections/WhyWeltriq";
 import { ServiceDelivery } from "@/components/sections/services/ServiceDelivery";
 import { WeltriqPromise } from "@/components/sections/WeltriqPromise";
 import { FinalCTA } from "@/components/sections/FinalCTA";
@@ -26,19 +24,13 @@ export default function ServicesPage() {
       {/* 2. Services Showcase */}
       <ServicesShowcase services={servicesPageServices} />
       
-      {/* 3. Project Types */}
-      <ProjectTypes />
-      
-      {/* 4. Why WELTRIQ */}
-      <WhyWeltriq />
-      
-      {/* 4. Service Delivery */}
+      {/* 3. Service Delivery */}
       <ServiceDelivery />
       
-      {/* 5. WELTRIQ Promise */}
+      {/* 4. WELTRIQ Promise */}
       <WeltriqPromise />
       
-      {/* 6. Final CTA */}
+      {/* 5. Final CTA */}
       <FinalCTA />
     </main>
   );

@@ -352,14 +352,24 @@ export function ServicesShowcase({
                     className={`w-full h-full flex flex-col ${isImageLeft ? 'md:flex-row-reverse' : 'md:flex-row'} relative overflow-hidden bg-brand-white`}
                   >
                     {/* Content Half (52% on mobile, 55% on desktop) */}
-                    <div className="w-full md:w-[55%] h-[52%] md:h-full flex flex-col items-center justify-center p-4 sm:p-8 lg:p-16 text-center order-2 md:order-none bg-brand-white">
-                      <div className="flex flex-col items-center justify-center space-y-2 sm:space-y-4 max-w-[95%] md:max-w-md">
-                        <span className="text-base sm:text-xl md:text-2xl lg:text-3xl font-display text-brand-yellow">
-                          {service.number}
+                    <div className="w-full md:w-[55%] h-[52%] md:h-full flex flex-col items-start justify-center p-4 sm:p-8 lg:p-16 order-2 md:order-none bg-brand-white">
+                      <div className="flex flex-col items-start justify-center space-y-3 sm:space-y-5 max-w-[95%] md:max-w-lg">
+                        <span className="text-xs sm:text-sm font-display font-bold uppercase tracking-widest text-brand-yellow border border-brand-yellow/30 px-3 py-1 rounded-sm">
+                          {service.number} / {String(services.length).padStart(2, "0")}
                         </span>
-                        <h3 className="text-xl sm:text-2xl md:text-4xl lg:text-[clamp(2.5rem,3.5vw,3.5rem)] font-display uppercase leading-tight text-brand-navy tracking-wide break-normal text-balance">
+                        <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-[clamp(2rem,3vw,3rem)] font-display uppercase leading-tight text-brand-navy tracking-wide break-normal text-balance">
                           {service.title}
                         </h3>
+                        <p className="text-sm sm:text-base md:text-lg text-brand-navy/65 leading-relaxed font-sans text-balance hidden sm:block">
+                          {service.description}
+                        </p>
+                        <Link
+                          href={`/services#${service.id}`}
+                          className="group mt-1 flex items-center gap-2 text-brand-navy font-display uppercase tracking-wider text-xs sm:text-sm font-bold hover:text-brand-yellow transition-colors"
+                        >
+                          Learn More
+                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                        </Link>
                       </div>
                     </div>
 

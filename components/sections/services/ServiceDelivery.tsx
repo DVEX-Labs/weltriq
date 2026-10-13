@@ -12,9 +12,9 @@ import {
   MessageSquareText,
   Ruler,
   FileText,
+  ClipboardCheck,
   HardHat,
   ShieldCheck,
-  Award,
 } from "lucide-react";
 
 if (typeof window !== "undefined") {
@@ -25,38 +25,44 @@ const steps = [
   {
     id: "01",
     phase: "STEP 01 / 06",
-    title: "ENQUIRY",
+    title: "ENQUIRY & CONSULTATION",
+    description: "Understanding your roofing requirements, architectural style, and project expectations.",
     icon: MessageSquareText,
   },
   {
     id: "02",
     phase: "STEP 02 / 06",
     title: "SITE ASSESSMENT",
+    description: "Comprehensive on-site inspection within 24 hours to assess structural requirements and measurements.",
     icon: Ruler,
   },
   {
     id: "03",
     phase: "STEP 03 / 06",
-    title: "QUOTATION / PROPOSAL",
+    title: "QUOTATION & SCOPE",
+    description: "Transparent proposal within 48 hours covering exact materials, fixed costs, and agreed timeline.",
     icon: FileText,
   },
   {
     id: "04",
     phase: "STEP 04 / 06",
-    title: "ROOFING EXECUTION",
-    icon: HardHat,
+    title: "PLANNING & COORDINATION",
+    description: "Structured planning of certified workforce, genuine materials, logistics, and execution sequence.",
+    icon: ClipboardCheck,
   },
   {
     id: "05",
     phase: "STEP 05 / 06",
-    title: "QUALITY INSPECTION",
-    icon: ShieldCheck,
+    title: "ROOFING INSTALLATION",
+    description: "Professional execution following standardized SOPs, engineered safety, and exact specifications.",
+    icon: HardHat,
   },
   {
     id: "06",
     phase: "STEP 06 / 06",
-    title: "FINAL HANDOVER",
-    icon: Award,
+    title: "INSPECTION & HANDOVER",
+    description: "Pre-handover multi-point quality check against the agreed scope before formal handover.",
+    icon: ShieldCheck,
   },
 ];
 
@@ -122,8 +128,8 @@ export function ServiceDelivery() {
                   icon={step.icon}
                   stepNumber={step.id}
                   title={step.title}
-                  showArrow
-                  className="min-h-[190px]"
+                  description={step.description}
+                  className="min-h-[200px]"
                 />
               ))}
             </div>

@@ -2,10 +2,10 @@ import React from "react";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { HomeHeroScroll } from "@/components/sections/HomeHeroScroll";
-import { WhyWeltriq } from "@/components/sections/WhyWeltriq";
 import { ServicesShowcase } from "@/components/sections/services/ServicesShowcase";
 import { homeServices } from "@/data/services";
 import { Process } from "@/components/sections/Process";
+import { WhyWeltriq } from "@/components/sections/WhyWeltriq";
 import { WeltriqPromise } from "@/components/sections/WeltriqPromise";
 import { AboutPreview } from "@/components/sections/AboutPreview";
 import { HomeBlogSection } from "@/components/sections/HomeBlogSection";
@@ -34,8 +34,8 @@ export default function HomePage() {
       </Section>
 
       <ServicesShowcase services={homeServices} showViewAll />
-      <WhyWeltriq />
       <Process />
+      <WhyWeltriq />
       <WeltriqPromise />
       <AboutPreview />
       <HomeBlogSection />
