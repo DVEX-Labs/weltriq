@@ -1,8 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
 import { AboutHero } from "@/components/sections/about/AboutHero";
-import { AboutWhoWeAre } from "@/components/sections/about/AboutWhoWeAre";
-import { AboutApproach } from "@/components/sections/about/AboutApproach";
 import { AboutMissionVision } from "@/components/sections/about/AboutMissionVision";
 import { AboutPhilosophy } from "@/components/sections/about/AboutPhilosophy";
 import { WeltriqPromise } from "@/components/sections/WeltriqPromise";
@@ -22,13 +20,7 @@ export default function AboutPage() {
       {/* 1. Hero */}
       <AboutHero />
 
-      {/* 2. Who We Are */}
-      <AboutWhoWeAre />
-
-      {/* 3. Our Approach */}
-      <AboutApproach />
-
-      {/* 4. Mission & Vision */}
+      {/* 2. Mission & Vision */}
       <AboutMissionVision />
 
       {/* 5. Brand Philosophy: EVERY PROJECT STARTS WITH PURPOSE */}

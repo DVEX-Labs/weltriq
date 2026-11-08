@@ -11,7 +11,7 @@ export function BlogEmptyState() {
       </div>
 
       <div className="space-y-3">
-        <span className="text-xs font-display uppercase tracking-widest font-bold text-brand-yellow bg-brand-navy/5 px-3.5 py-1 rounded-full border border-brand-navy/10 inline-block">
+        <span className="text-xs font-display uppercase tracking-widest font-bold text-brand-navy/70 bg-brand-navy/5 px-4 py-1.5 rounded-full border border-brand-navy/10 inline-block">
           COMING SOON
         </span>
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-display uppercase text-brand-navy tracking-tight leading-tight">

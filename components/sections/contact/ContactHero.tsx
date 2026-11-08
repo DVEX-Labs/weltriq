@@ -22,12 +22,15 @@ export function ContactHero() {
 
       <Container className="relative z-10 w-full py-20 md:py-24">
         <div className="max-w-4xl space-y-5 md:space-y-6">
-          <span className="text-xs sm:text-sm font-display uppercase tracking-[0.18em] text-brand-yellow">
-            CONTACT WELTRIQ
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-brand-white/80 font-display uppercase tracking-[0.18em] text-xs sm:text-sm">
+              CONTACT WELTRIQ
+            </span>
+            <span className="h-px w-10 bg-brand-white/30" aria-hidden="true" />
+          </div>
 
           <h1 className="max-w-4xl text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display uppercase leading-[0.98] tracking-tight text-brand-white break-normal hyphens-none text-balance">
-            PLAN YOUR <span className="text-brand-yellow">ROOFING PROJECT</span>
+            PLAN YOUR ROOFING PROJECT
           </h1>
 
           <p className="max-w-2xl text-base sm:text-lg md:text-xl text-brand-white/85 leading-relaxed text-balance">

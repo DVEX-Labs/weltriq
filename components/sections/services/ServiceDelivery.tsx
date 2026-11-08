@@ -126,7 +126,7 @@ export function ServiceDelivery() {
                   key={step.id}
                   badge={step.phase}
                   icon={step.icon}
-                  stepNumber={step.id}
+                  watermarkNumber={step.id}
                   title={step.title}
                   description={step.description}
                   className="min-h-[200px]"

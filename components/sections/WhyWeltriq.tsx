@@ -1,16 +1,12 @@
 "use client";
 
-import React, { useRef } from "react";
+import React from "react";
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import { Button } from "@/components/ui/Button";
+import { useInspectionModal } from "@/components/providers/InspectionModalProvider";
+import { ArrowRight } from "lucide-react";
 
 const values = [
   {
@@ -41,126 +37,88 @@ const values = [
 ];
 
 export function WhyWeltriq() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLDivElement>(null);
-  const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
-
-  useGSAP(
-    () => {
-      if (!sectionRef.current) return;
-      const items = itemsRef.current.filter(Boolean);
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
-          once: true,
-        },
-      });
-
-      if (imageRef.current) {
-        tl.from(imageRef.current, {
-          x: -40,
-          opacity: 0,
-          duration: 1,
-          ease: "power2.out",
-        }, 0);
-      }
-
-      if (headingRef.current) {
-        tl.from(headingRef.current, {
-          y: 24,
-          opacity: 0,
-          duration: 0.8,
-          ease: "power2.out",
-        }, 0.1);
-      }
-
-      if (items.length > 0) {
-        tl.from(items, {
-          y: 20,
-          opacity: 0,
-          duration: 0.7,
-          stagger: 0.1,
-          ease: "power2.out",
-        }, 0.25);
-      }
-    },
-    { scope: sectionRef }
-  );
+  const { openModal } = useInspectionModal();
 
   return (
-    <Section className="bg-brand-navy text-brand-white overflow-hidden">
+    <Section className="bg-white text-brand-navy border-b border-brand-navy/10 overflow-hidden">
       <Container>
-        <div ref={sectionRef} className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="flex flex-col gap-10 md:gap-14">
 
-          {/* LEFT — Image + Title block */}
-          <div className="flex flex-col gap-8">
-            {/* Label + Heading */}
-            <div ref={headingRef} className="space-y-4">
-              <span className="text-brand-yellow font-display uppercase tracking-widest text-xs md:text-sm font-bold">
-                Why WELTRIQ
-              </span>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display uppercase leading-[1.08] text-brand-white">
-                Professionally{" "}
-                <br className="hidden md:block" />
-                Managed{" "}
-                <br className="hidden md:block" />
-                <span className="text-brand-yellow">Roofing.</span>
-              </h2>
-              <p className="text-brand-white/60 text-base md:text-lg font-sans leading-relaxed max-w-sm">
-                With one accountable partner from planning to completion.
-              </p>
-            </div>
-
-            {/* Image */}
-            <div
-              ref={imageRef}
-              className="relative w-full aspect-[4/3] rounded-sm overflow-hidden"
-            >
-              <Image
-                src="/images/refined/about_approach_architecture.png"
-                alt="Professional roofing management"
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover object-center"
-              />
-              {/* Subtle overlay for contrast */}
-              <div className="absolute inset-0 bg-brand-navy/20" />
-              {/* Yellow bottom accent */}
-              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-brand-yellow" />
-            </div>
+          {/* TOP — Label + Heading (full width) */}
+          <div className="space-y-3 max-w-3xl">
+            <span className="inline-flex items-center gap-2 text-xs md:text-sm font-display uppercase tracking-widest font-bold text-brand-navy/70 bg-brand-navy/5 px-3.5 py-1.5 rounded-full border border-brand-navy/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-yellow shrink-0"></span>
+              Why WELTRIQ
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display uppercase leading-[1.08] text-brand-navy">
+              Professionally Managed Roofing.
+            </h2>
+            <p className="text-brand-navy/70 text-base md:text-lg font-sans leading-relaxed max-w-xl">
+              With one accountable partner from planning to completion.
+            </p>
           </div>
 
-          {/* RIGHT — Values list */}
-          <div className="flex flex-col divide-y divide-white/10">
-            {values.map((value, index) => (
-              <div
-                key={value.title}
-                ref={(el) => {
-                  itemsRef.current[index] = el;
-                }}
-                className="group flex items-start gap-5 py-6 md:py-7 hover:bg-white/[0.03] px-4 -mx-4 rounded-sm transition-colors duration-300"
-              >
-                {/* Number */}
-                <span className="text-xs font-display font-bold uppercase tracking-widest text-brand-yellow mt-1 shrink-0 w-6">
-                  {value.number}
-                </span>
+          {/* BOTTOM — Two columns: 5:7 ratio matching About page layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
-                {/* Content */}
-                <div className="flex flex-col gap-1.5">
-                  <h3 className="text-base md:text-lg font-display font-bold uppercase tracking-wide text-brand-white group-hover:text-brand-yellow transition-colors duration-300">
-                    {value.title}
-                  </h3>
-                  <p className="text-sm md:text-base text-brand-white/55 leading-relaxed font-sans">
-                    {value.description}
-                  </p>
-                </div>
+            {/* LEFT — Architectural Craftsmanship Visual (Span 5) */}
+            <div className="lg:col-span-5 w-full flex items-center justify-center">
+              <div className="relative aspect-[16/11] lg:aspect-[5/4] w-full max-w-[440px] rounded-2xl overflow-hidden border border-brand-navy/10 shadow-[0_12px_40px_rgba(12,21,51,0.08)] group bg-brand-navy/5">
+                <Image
+                  src="/images/refined/why_weltriq_kerala_truss.webp"
+                  alt="WELTRIQ Kerala Architectural Roofing and Truss Engineering"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 42vw"
+                  className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                />
               </div>
-            ))}
+            </div>
+
+            {/* RIGHT — Values list (Span 7) */}
+            <div className="lg:col-span-7 w-full flex flex-col divide-y divide-brand-navy/10 border-y border-brand-navy/10">
+              {values.map((value) => (
+                <div
+                  key={value.title}
+                  className="group py-3.5 sm:py-4 px-3 sm:px-4 rounded-xl hover:bg-brand-navy/[0.03] transition-all duration-300 ease-out"
+                >
+                  <div className="flex items-start gap-4">
+                    {/* Proportional Display Number */}
+                    <span className="font-display font-bold text-lg sm:text-xl text-brand-navy/35 shrink-0 w-7 sm:w-8 pt-0.5 leading-none group-hover:text-brand-navy transition-colors">
+                      {value.number}
+                    </span>
+
+                    {/* Value Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm sm:text-base font-display font-bold uppercase text-brand-navy tracking-wide group-hover:text-brand-navy transition-colors duration-300">
+                          {value.title}
+                        </h3>
+                        <ArrowRight className="w-3.5 h-3.5 text-brand-navy/30 group-hover:text-brand-navy group-hover:translate-x-1 transition-all duration-300 shrink-0 hidden sm:block" />
+                      </div>
+
+                      <p className="text-xs sm:text-sm font-sans font-normal text-brand-navy/65 leading-relaxed mt-0.5">
+                        {value.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
           </div>
 
+          {/* Centered CTA Button (Option B) */}
+          <div className="flex justify-center mt-12 md:mt-16">
+            <Button
+              size="lg"
+              variant="primary"
+              onClick={() => openModal("General Site Inspection")}
+              className="group flex items-center gap-2 cursor-pointer"
+            >
+              <span>Book Site Inspection</span>
+              <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </div>
         </div>
       </Container>
     </Section>

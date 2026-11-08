@@ -40,7 +40,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   return (
     <main className="w-full">
       {/* 1. Editorial Full-Width Hero */}
-      <section className="relative min-h-[clamp(480px,58vh,580px)] flex items-center bg-brand-navy text-brand-white overflow-hidden">
+      <section className="relative min-h-[clamp(520px,62vh,620px)] flex items-center bg-brand-navy text-brand-white overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/refined/blog_hero.webp"
@@ -55,10 +55,13 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </div>
 
         <Container className="relative z-10 w-full py-20 md:py-24">
-          <div className="max-w-4xl space-y-4 md:space-y-6">
-            <span className="text-xs sm:text-sm font-display uppercase tracking-[0.18em] text-brand-yellow">
-              ARTICLES &amp; INSIGHTS
-            </span>
+          <div className="max-w-4xl space-y-5 md:space-y-6">
+            <div className="flex items-center gap-3">
+              <span className="text-brand-white/80 font-display uppercase tracking-[0.18em] text-xs sm:text-sm">
+                ARTICLES &amp; INSIGHTS
+              </span>
+              <span className="h-px w-10 bg-brand-white/30" aria-hidden="true" />
+            </div>
             <h1 className="max-w-4xl text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display uppercase leading-[0.98] tracking-tight text-brand-white break-normal hyphens-none">
               ROOFING INSIGHTS &amp; EXPERT GUIDES
             </h1>

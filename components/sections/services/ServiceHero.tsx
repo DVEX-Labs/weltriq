@@ -1,11 +1,15 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { useInspectionModal } from "@/components/providers/InspectionModalProvider";
 
 export function ServiceHero() {
+  const { openModal } = useInspectionModal();
   return (
     <section className="relative min-h-[clamp(520px,62vh,620px)] flex items-center bg-brand-navy text-brand-white overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -24,10 +28,10 @@ export function ServiceHero() {
       <Container className="relative z-10 w-full py-20 md:py-24">
         <div className="max-w-4xl space-y-5 md:space-y-6">
           <div className="flex items-center gap-3">
-            <span className="text-brand-yellow font-display uppercase tracking-[0.18em] text-xs sm:text-sm">
+            <span className="text-brand-white/80 font-display uppercase tracking-[0.18em] text-xs sm:text-sm">
               OUR SERVICES
             </span>
-            <span className="h-px w-10 bg-brand-yellow/70" aria-hidden="true" />
+            <span className="h-px w-10 bg-brand-white/30" aria-hidden="true" />
           </div>
 
           <h1 className="max-w-4xl text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display uppercase leading-[0.98] tracking-tight text-brand-white break-normal hyphens-none">
@@ -39,10 +43,15 @@ export function ServiceHero() {
           </p>
 
           <div className="pt-1">
-            <Button variant="primary" size="lg" asChild>
-              <Link href="/contact" className="inline-flex items-center gap-2">
-                Get a Quote <ArrowRight className="w-4 h-4 stroke-[2.5]" aria-hidden="true" />
-              </Link>
+            <Button
+              variant="primary"
+              size="lg"
+              className="group cursor-pointer"
+              onClick={() => openModal("General Site Inspection")}
+            >
+              <span className="inline-flex items-center gap-2">
+                Book Site Inspection <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+              </span>
             </Button>
           </div>
         </div>

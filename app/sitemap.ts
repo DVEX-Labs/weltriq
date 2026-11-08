@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { getPublishedArticles } from "@/lib/blog/db";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://weltriq.com";
+  const baseUrl = "https://weltriq.in";
 
   // Static marketing pages
   const staticRoutes: MetadataRoute.Sitemap = [

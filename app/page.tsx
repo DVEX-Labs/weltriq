@@ -8,7 +8,7 @@ import { Process } from "@/components/sections/Process";
 import { WhyWeltriq } from "@/components/sections/WhyWeltriq";
 import { WeltriqPromise } from "@/components/sections/WeltriqPromise";
 import { AboutPreview } from "@/components/sections/AboutPreview";
-import { HomeBlogSection } from "@/components/sections/HomeBlogSection";
+
 import { FinalCTA } from "@/components/sections/FinalCTA";
 
 export const dynamic = "force-dynamic";
@@ -38,7 +38,6 @@ export default function HomePage() {
       <Process />
       <WeltriqPromise />
       <AboutPreview />
-      <HomeBlogSection />
       <FinalCTA />
     </main>
   );

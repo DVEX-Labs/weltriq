@@ -1,91 +1,138 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
-import { footerLinks } from "@/data/navigation";
 import { contactInfo } from "@/data/contact";
 
 export function Footer() {
   return (
-    <footer className="bg-brand-navy text-brand-white pt-16 pb-8 border-t border-brand-navy/10">
-      <Container>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+    <footer className="bg-brand-navy text-brand-white border-t border-brand-white/10">
+      <Container className="py-14 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12 pb-12 border-b border-brand-white/10">
           
-          <div className="space-y-4 md:col-span-1">
-            <Link href="/" className="inline-block">
-              <span className="font-display text-3xl font-bold uppercase tracking-tight text-brand-yellow">
-                Weltriq
-              </span>
+          {/* Brand Column */}
+          <div className="lg:col-span-2 space-y-4">
+            <Link href="/" className="inline-block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-yellow rounded-xl">
+              <Image
+                src="/images/logo/weltriq-logo-white.png"
+                alt="WELTRIQ - Professional Roofing Solutions"
+                width={210}
+                height={58}
+                className="h-10 sm:h-12 w-auto object-contain group-hover:opacity-90 transition-opacity"
+              />
             </Link>
-            <p className="text-brand-white/80 text-sm max-w-xs text-balance font-sans">
-              Professionally managed roofing, with one accountable partner from planning to completion.
+
+            <p className="text-sm text-brand-white/60 max-w-sm leading-relaxed font-sans">
+              Professionally managed roofing across Kerala. One accountable partner from planning to handover.
             </p>
           </div>
-          
-          <div className="space-y-4">
-            <h4 className="font-display text-lg uppercase text-brand-white">Services</h4>
-            <ul className="space-y-2">
-              {footerLinks.services.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href} className="text-sm text-brand-white/70 hover:text-brand-yellow transition-colors font-sans">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <div className="pt-1">
-              <Link 
-                href="/services" 
-                className="inline-flex items-center gap-1.5 text-xs font-display font-bold uppercase tracking-wider text-brand-yellow hover:text-brand-yellow/80 transition-colors group"
-              >
-                View All Services <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <h4 className="font-display text-lg uppercase text-brand-white">Company</h4>
-            <ul className="space-y-2">
-              {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href} className="text-sm text-brand-white/70 hover:text-brand-yellow transition-colors font-sans">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          
-          <div className="space-y-4">
-            <h4 className="font-display text-lg uppercase text-brand-white">Contact</h4>
-            <ul className="space-y-2 text-sm text-brand-white/70 font-sans">
-              <li>{contactInfo.address}</li>
+
+          {/* Navigation */}
+          <div className="space-y-3.5">
+            <span className="text-[11px] font-display uppercase tracking-[0.18em] text-brand-white/40 block">
+              Pages
+            </span>
+            <ul className="space-y-2 text-sm text-brand-white/65 font-sans">
               <li>
-                <a href={`tel:${contactInfo.phone.replace(/\s+/g, '')}`} className="hover:text-brand-yellow transition-colors">
+                <Link href="/" className="hover:text-brand-white transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="hover:text-brand-white transition-colors">
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-brand-white transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="hover:text-brand-white transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-brand-white transition-colors">
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Solutions */}
+          <div className="space-y-3.5">
+            <span className="text-[11px] font-display uppercase tracking-[0.18em] text-brand-white/40 block">
+              Solutions
+            </span>
+            <ul className="space-y-2 text-sm text-brand-white/65 font-sans">
+              <li>
+                <Link href="/services#service-card-clay-tile" className="hover:text-brand-white transition-colors">
+                  Clay Tile Roofing
+                </Link>
+              </li>
+              <li>
+                <Link href="/services#service-card-metal" className="hover:text-brand-white transition-colors">
+                  Metal Roofing
+                </Link>
+              </li>
+              <li>
+                <Link href="/services#service-card-shingles" className="hover:text-brand-white transition-colors">
+                  Shingles Roofing
+                </Link>
+              </li>
+              <li>
+                <Link href="/services#service-card-stone-coated" className="hover:text-brand-white transition-colors">
+                  Stone Coated Roofing
+                </Link>
+              </li>
+              <li>
+                <Link href="/services#service-card-renovation" className="hover:text-brand-white transition-colors">
+                  Roof Renovation
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div className="space-y-3.5">
+            <span className="text-[11px] font-display uppercase tracking-[0.18em] text-brand-white/40 block">
+              Contact
+            </span>
+            <ul className="space-y-2 text-sm text-brand-white/65 font-sans">
+              <li className="text-brand-white/50 leading-relaxed">
+                {contactInfo.address}, Kerala
+              </li>
+              <li>
+                <a href={`tel:${contactInfo.phone.replace(/\s+/g, '')}`} className="hover:text-brand-white transition-colors">
                   {contactInfo.phone}
                 </a>
               </li>
               <li>
-                <a href={`mailto:${contactInfo.email}`} className="hover:text-brand-yellow transition-colors">
+                <a href={`mailto:${contactInfo.email}`} className="hover:text-brand-white transition-colors">
                   {contactInfo.email}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://wa.me/919747506015" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-brand-white transition-colors"
+                >
+                  WhatsApp Chat
                 </a>
               </li>
             </ul>
           </div>
-          
         </div>
-        
-        <div className="border-t border-brand-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-brand-white/50 font-sans">
-            © {new Date().getFullYear()} WELTRIQ. All rights reserved.
-          </p>
-          <div className="flex items-center space-x-6 text-sm text-brand-white/50 font-sans">
-            <span>Facebook</span>
-            <span>Instagram</span>
-            <span>LinkedIn</span>
-          </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-brand-white/40 font-sans">
+          <p>© {new Date().getFullYear()} WELTRIQ. All rights reserved.</p>
+          <p>Palakkad, Kerala, India</p>
         </div>
       </Container>
     </footer>
   );
 }
-

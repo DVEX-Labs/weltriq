@@ -15,6 +15,10 @@ export interface WeltriqCardProps extends Omit<React.HTMLAttributes<HTMLDivEleme
   numberClassName?: string;
   /** Number placement: 'inline' with title or 'stacked' above title (defaults to 'inline') */
   numberPlacement?: "inline" | "stacked";
+  /** Optional background watermark number or text (e.g. "01", "02") */
+  watermarkNumber?: React.ReactNode;
+  /** Custom class name for the background watermark number */
+  watermarkClassName?: string;
   /** Optional card title */
   title?: React.ReactNode;
   /** Custom class name for the card title */
@@ -50,6 +54,8 @@ export const WeltriqCard = React.forwardRef<HTMLDivElement, WeltriqCardProps>(
       stepNumber,
       numberClassName,
       numberPlacement = "inline",
+      watermarkNumber,
+      watermarkClassName,
       title,
       titleClassName,
       description,
@@ -89,7 +95,22 @@ export const WeltriqCard = React.forwardRef<HTMLDivElement, WeltriqCardProps>(
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-brand-navy opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none" />
         )}
 
-        <div>
+        {/* Background Watermark Number: Visible on mobile/tablet, reveals on hover on desktop */}
+        {watermarkNumber && (
+          <div
+            aria-hidden="true"
+            className={cn(
+              "absolute right-3 -bottom-2 sm:right-4 sm:-bottom-3 text-7xl sm:text-8xl md:text-8xl font-display font-black tracking-tighter leading-none select-none pointer-events-none z-0",
+              "text-brand-navy/[0.08] lg:text-brand-navy/[0.06] lg:group-hover:text-brand-navy/[0.12]",
+              "opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 ease-out",
+              watermarkClassName
+            )}
+          >
+            {watermarkNumber}
+          </div>
+        )}
+
+        <div className="relative z-10">
           {/* Top Row: Badge on Left, Icon Container on Right */}
           {hasTopRow && (
             <div className="flex items-center justify-between gap-3 mb-6">
@@ -188,7 +209,7 @@ export const WeltriqCard = React.forwardRef<HTMLDivElement, WeltriqCardProps>(
         {hasFooterZone && (
           <div
             className={cn(
-              "pt-4 flex items-center justify-between mt-6",
+              "relative z-10 pt-4 flex items-center justify-between mt-6",
               showDivider && "border-t border-brand-navy/8",
               !footer && "justify-end"
             )}

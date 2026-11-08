@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
@@ -60,17 +61,19 @@ export default function AdminLoginPage() {
 
       {/* Login Card */}
       <div className="relative z-10 w-full max-w-md bg-brand-white text-brand-navy rounded-xl shadow-2xl border border-brand-navy/10 p-8 sm:p-10">
-        <div className="text-center mb-8">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-yellow/15 text-brand-navy mb-4 border border-brand-yellow/30">
-            <Lock className="h-6 w-6 text-brand-navy" />
-          </div>
-          <span className="text-xs font-display uppercase tracking-widest font-bold text-brand-yellow block mb-2">
-            ADMIN PORTAL
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Image
+            src="/images/logo/weltriq-logo.png"
+            alt="WELTRIQ - Professional Roofing Solutions"
+            width={220}
+            height={60}
+            priority
+            className="h-12 sm:h-14 w-auto object-contain mb-4"
+          />
+          <span className="text-xs font-display uppercase tracking-widest text-brand-navy/60 block mb-1">
+            Admin Portal
           </span>
-          <h1 className="text-2xl sm:text-3xl font-display uppercase text-brand-navy tracking-tight">
-            WELTRIQ PUBLISHING
-          </h1>
-          <p className="text-xs sm:text-sm text-brand-navy/70 mt-1">
+          <p className="text-xs sm:text-sm text-brand-navy/70">
             Sign in to manage roofing articles and insights
           </p>
         </div>

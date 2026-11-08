@@ -37,58 +37,58 @@ export function ContactEnquiry() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column - Intro & Commitments */}
           <div className="lg:col-span-5 space-y-8">
-            <div className="space-y-4">
-              <span className="text-xs md:text-sm font-display uppercase tracking-widest font-bold text-brand-yellow">
+            <div className="space-y-3">
+              <span className="text-xs font-display uppercase tracking-widest text-brand-navy/70 bg-brand-navy/5 px-4 py-1.5 rounded-full border border-brand-navy/10 inline-block">
                 Enquiry Form
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display uppercase leading-[1.15] text-brand-navy">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display uppercase leading-[1.15] text-brand-navy tracking-tight">
                 Share Your Roofing Requirement
               </h2>
-              <p className="text-base md:text-lg text-brand-navy/75 leading-relaxed font-sans text-balance">
-                Share your roofing requirement and WELTRIQ will get in touch with you.
+              <p className="text-sm sm:text-base text-brand-navy/70 leading-relaxed font-sans text-balance pt-1">
+                Tell us about your project. Our technical team will review your requirements, conduct an on-site evaluation, and provide a transparent quotation.
               </p>
             </div>
 
             {/* Documented Commitments */}
-            <div className="space-y-4 pt-4 border-t border-brand-navy/10">
-              <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-island-spice text-brand-navy">
+            <div className="space-y-5 pt-6 border-t border-brand-navy/10">
+              <div className="flex items-start gap-4 group">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/5 text-brand-navy border border-brand-navy/10 transition-colors duration-300 group-hover:bg-brand-navy group-hover:text-brand-white">
                   <Clock className="w-5 h-5 stroke-[2]" />
                 </div>
                 <div>
-                  <h3 className="text-base font-display font-bold uppercase text-brand-navy">
+                  <h3 className="text-sm sm:text-base font-display uppercase text-brand-navy tracking-wide">
                     SITE INSPECTION WITHIN 24 HOURS
                   </h3>
-                  <p className="text-xs text-brand-navy/65 font-sans mt-0.5">
-                    Within 24 Hours
+                  <p className="text-xs text-brand-navy/65 font-sans mt-0.5 leading-relaxed">
+                    Prompt, professional on-site assessment by our senior engineer
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-island-spice text-brand-navy">
+              <div className="flex items-start gap-4 group">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/5 text-brand-navy border border-brand-navy/10 transition-colors duration-300 group-hover:bg-brand-navy group-hover:text-brand-white">
                   <ShieldCheck className="w-5 h-5 stroke-[2]" />
                 </div>
                 <div>
-                  <h3 className="text-base font-display font-bold uppercase text-brand-navy">
+                  <h3 className="text-sm sm:text-base font-display uppercase text-brand-navy tracking-wide">
                     QUOTATION WITHIN 48 HOURS
                   </h3>
-                  <p className="text-xs text-brand-navy/65 font-sans mt-0.5">
-                    Within 48 Hours
+                  <p className="text-xs text-brand-navy/65 font-sans mt-0.5 leading-relaxed">
+                    Itemized, transparent cost breakdown with zero hidden fees
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-island-spice text-brand-navy">
+              <div className="flex items-start gap-4 group">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/5 text-brand-navy border border-brand-navy/10 transition-colors duration-300 group-hover:bg-brand-navy group-hover:text-brand-white">
                   <UserCheck className="w-5 h-5 stroke-[2]" />
                 </div>
                 <div>
-                  <h3 className="text-base font-display font-bold uppercase text-brand-navy">
+                  <h3 className="text-sm sm:text-base font-display uppercase text-brand-navy tracking-wide">
                     ONE ACCOUNTABLE PARTNER
                   </h3>
-                  <p className="text-xs text-brand-navy/65 font-sans mt-0.5">
-                    From planning to completion
+                  <p className="text-xs text-brand-navy/65 font-sans mt-0.5 leading-relaxed">
+                    Single point of contact from initial plan to final handover
                   </p>
                 </div>
               </div>
@@ -97,8 +97,7 @@ export function ContactEnquiry() {
 
           {/* Right Column - Enquiry Form Card */}
           <div className="lg:col-span-7">
-            <div className="rounded-sm border border-brand-navy/12 bg-white p-6 sm:p-8 md:p-10 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-[3px] bg-brand-yellow" />
+            <div className="rounded-2xl border border-gray-200 bg-brand-white p-6 sm:p-8 md:p-10 shadow-[0_12px_40px_rgba(12,21,51,0.06)] relative">
 
               {isSubmitted ? (
                 <div className="py-12 text-center space-y-6 flex flex-col items-center">
@@ -106,7 +105,7 @@ export function ContactEnquiry() {
                     <CheckCircle2 className="w-10 h-10 stroke-[2.2]" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-2xl font-display uppercase font-bold text-brand-navy">
+                    <h3 className="text-2xl font-display uppercase text-brand-navy">
                       Enquiry Received
                     </h3>
                     <p className="text-sm text-brand-navy/70 max-w-md mx-auto font-sans leading-relaxed">
@@ -132,10 +131,10 @@ export function ContactEnquiry() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                     {/* Name */}
                     <div className="space-y-2">
-                      <label htmlFor="name" className="block text-xs font-display font-bold uppercase tracking-wider text-brand-navy">
+                      <label htmlFor="name" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
                         Your Name <span className="text-red-500">*</span>
                       </label>
                       <Input
@@ -146,13 +145,13 @@ export function ContactEnquiry() {
                         placeholder="Enter full name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="bg-brand-island-spice/30"
+                        className="bg-brand-white border-gray-200 rounded-lg h-11 focus-visible:border-brand-navy focus-visible:ring-brand-navy/10"
                       />
                     </div>
 
                     {/* Phone */}
                     <div className="space-y-2">
-                      <label htmlFor="phone" className="block text-xs font-display font-bold uppercase tracking-wider text-brand-navy">
+                      <label htmlFor="phone" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
                         Phone Number <span className="text-red-500">*</span>
                       </label>
                       <Input
@@ -163,14 +162,14 @@ export function ContactEnquiry() {
                         placeholder="Enter phone number"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="bg-brand-island-spice/30"
+                        className="bg-brand-white border-gray-200 rounded-lg h-11 focus-visible:border-brand-navy focus-visible:ring-brand-navy/10"
                       />
                     </div>
                   </div>
 
                   {/* Email */}
                   <div className="space-y-2">
-                    <label htmlFor="email" className="block text-xs font-display font-bold uppercase tracking-wider text-brand-navy">
+                    <label htmlFor="email" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
                       Email Address <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -181,14 +180,14 @@ export function ContactEnquiry() {
                       placeholder="name@example.com"
                       value={formData.email}
                       onChange={handleChange}
-                      className="bg-brand-island-spice/30"
+                      className="bg-brand-white border-gray-200 rounded-lg h-11 focus-visible:border-brand-navy focus-visible:ring-brand-navy/10"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                     {/* Project Type */}
                     <div className="space-y-2">
-                      <label htmlFor="projectType" className="block text-xs font-display font-bold uppercase tracking-wider text-brand-navy">
+                      <label htmlFor="projectType" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
                         Project Type <span className="text-red-500">*</span>
                       </label>
                       <select
@@ -197,7 +196,7 @@ export function ContactEnquiry() {
                         value={formData.projectType}
                         onChange={handleChange}
                         required
-                        className="flex h-10 w-full rounded-sm border border-brand-navy/20 bg-brand-island-spice/30 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-yellow font-sans text-brand-navy"
+                        className="flex h-11 w-full rounded-lg border border-gray-200 bg-brand-white px-3.5 py-2.5 text-sm focus-visible:outline-none focus-visible:border-brand-navy focus-visible:ring-2 focus-visible:ring-brand-navy/10 font-sans text-brand-navy transition-all"
                       >
                         <option value="" disabled>Select project type</option>
                         <option value="Residential">Residential</option>
@@ -208,7 +207,7 @@ export function ContactEnquiry() {
 
                     {/* Requirement */}
                     <div className="space-y-2">
-                      <label htmlFor="requirement" className="block text-xs font-display font-bold uppercase tracking-wider text-brand-navy">
+                      <label htmlFor="requirement" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
                         Roofing Requirement <span className="text-red-500">*</span>
                       </label>
                       <select
@@ -217,14 +216,16 @@ export function ContactEnquiry() {
                         value={formData.requirement}
                         onChange={handleChange}
                         required
-                        className="flex h-10 w-full rounded-sm border border-brand-navy/20 bg-brand-island-spice/30 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-yellow font-sans text-brand-navy"
+                        className="flex h-11 w-full rounded-lg border border-gray-200 bg-brand-white px-3.5 py-2.5 text-sm focus-visible:outline-none focus-visible:border-brand-navy focus-visible:ring-2 focus-visible:ring-brand-navy/10 font-sans text-brand-navy transition-all"
                       >
                         <option value="" disabled>Select roofing requirement</option>
-                        <option value="Metal Roofing">Metal Roofing</option>
                         <option value="Clay Tile Roofing">Clay Tile Roofing</option>
+                        <option value="Metal Roofing">Metal Roofing</option>
                         <option value="Ceramic Roofing">Ceramic Roofing</option>
-                        <option value="UPVC Roofing">UPVC Roofing</option>
                         <option value="Polycarbonate Roofing">Polycarbonate Roofing</option>
+                        <option value="Shingles Roofing">Shingles Roofing</option>
+                        <option value="UPVC Roofing">UPVC Roofing</option>
+                        <option value="Stone Coated Roofing">Stone Coated Roofing</option>
                         <option value="Roofing Sheet Installation">Roofing Sheet Installation</option>
                         <option value="Roof Renovation">Roof Renovation</option>
                         <option value="Other">Other</option>
@@ -234,7 +235,7 @@ export function ContactEnquiry() {
 
                   {/* Message */}
                   <div className="space-y-2">
-                    <label htmlFor="message" className="block text-xs font-display font-bold uppercase tracking-wider text-brand-navy">
+                    <label htmlFor="message" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
                       Message / Project Details
                     </label>
                     <Textarea
@@ -244,12 +245,12 @@ export function ContactEnquiry() {
                       placeholder="Describe your roofing project, location, or timeline requirements..."
                       value={formData.message}
                       onChange={handleChange}
-                      className="bg-brand-island-spice/30 resize-y min-h-[100px]"
+                      className="bg-brand-white border-gray-200 rounded-lg p-3.5 text-brand-navy resize-y min-h-[110px] focus-visible:border-brand-navy focus-visible:ring-brand-navy/10"
                     />
                   </div>
 
                   {/* Submit Button */}
-                  <Button type="submit" variant="primary" size="lg" className="w-full">
+                  <Button type="submit" variant="primary" size="lg" className="w-full text-sm font-display uppercase tracking-wider font-bold py-3.5">
                     Submit Enquiry
                   </Button>
                 </form>

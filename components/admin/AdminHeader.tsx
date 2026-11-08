@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { BookOpen, ExternalLink, LogOut, Plus } from "lucide-react";
 
@@ -29,10 +30,15 @@ export function AdminHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand & Admin Tag */}
         <div className="flex items-center gap-4">
-          <Link href="/admin/blogs" className="flex items-center gap-2.5">
-            <span className="font-display text-xl sm:text-2xl uppercase tracking-tight font-bold text-brand-white">
-              WELTRIQ
-            </span>
+          <Link href="/admin/blogs" className="flex items-center gap-3">
+            <Image
+              src="/images/logo/weltriq-logo-white.png"
+              alt="WELTRIQ - Professional Roofing Solutions"
+              width={160}
+              height={44}
+              priority
+              className="h-8 sm:h-9 w-auto object-contain"
+            />
             <span className="text-[10px] font-display uppercase tracking-widest font-bold bg-brand-yellow/20 text-brand-yellow px-2 py-0.5 rounded border border-brand-yellow/30">
               Admin
             </span>

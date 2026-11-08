@@ -140,7 +140,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
 
           {/* Category Badge */}
           <div className="mb-4">
-            <span className="text-xs font-display uppercase tracking-widest font-bold text-brand-yellow bg-brand-yellow/10 px-3.5 py-1 rounded-full border border-brand-yellow/20 inline-block">
+            <span className="text-xs font-display uppercase tracking-widest font-bold text-brand-white/80 bg-white/10 px-3.5 py-1 rounded-full border border-white/20 inline-block">
               {article.category}
             </span>
           </div>
@@ -232,7 +232,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
           <Container>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
               <div>
-                <span className="text-xs font-display uppercase tracking-widest font-bold text-brand-yellow block mb-2">
+                <span className="text-xs font-display uppercase tracking-widest font-bold text-brand-navy/70 bg-brand-navy/5 px-4 py-1.5 rounded-full border border-brand-navy/10 inline-block mb-3">
                   MORE ARTICLES
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-display uppercase text-brand-navy">

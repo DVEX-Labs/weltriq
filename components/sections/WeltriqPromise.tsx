@@ -1,6 +1,11 @@
+"use client";
+
 import React from "react";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
+import { Button } from "@/components/ui/Button";
+import { useInspectionModal } from "@/components/providers/InspectionModalProvider";
+import { ArrowRight } from "lucide-react";
 
 const promises = [
   {
@@ -24,17 +29,18 @@ const promises = [
 ];
 
 export function WeltriqPromise() {
+  const { openModal } = useInspectionModal();
+
   return (
     <Section className="bg-brand-navy text-brand-white overflow-hidden">
       <Container>
         {/* Header */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16 md:mb-20 space-y-4">
-          <span className="text-brand-yellow font-display uppercase tracking-widest text-xs md:text-sm font-bold">
+          <span className="text-xs font-display uppercase tracking-widest font-bold text-brand-white/80 bg-white/10 px-4 py-1.5 rounded-full border border-white/20 inline-block">
             The WELTRIQ Promise
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display uppercase leading-[1.08] text-brand-white">
-            Clear Commitments.{" "}
-            <span className="text-brand-yellow">Professional</span> Execution.
+            Clear Commitments. Professional Execution.
           </h2>
         </div>
 
@@ -46,7 +52,7 @@ export function WeltriqPromise() {
               className="group relative p-8 md:p-10 lg:p-12 flex flex-col gap-4 hover:bg-white/[0.04] transition-colors duration-300"
             >
               {/* Index */}
-              <span className="text-xs font-display font-bold uppercase tracking-widest text-brand-yellow/60 group-hover:text-brand-yellow transition-colors duration-300">
+              <span className="text-xs font-display font-bold uppercase tracking-widest text-brand-white/40 group-hover:text-brand-white transition-colors duration-300">
                 {promise.id}
               </span>
 
@@ -71,8 +77,21 @@ export function WeltriqPromise() {
           ))}
         </div>
 
+        {/* CTA Button */}
+        <div className="flex justify-center mt-10 md:mt-12">
+          <Button
+            size="lg"
+            variant="primary"
+            onClick={() => openModal("Site Inspection")}
+            className="group flex items-center gap-2 cursor-pointer"
+          >
+            <span>Book Site Inspection</span>
+            <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+          </Button>
+        </div>
+
         {/* Bottom Tagline */}
-        <p className="text-center text-brand-white/40 text-xs font-display uppercase tracking-widest mt-10 md:mt-12">
+        <p className="text-center text-brand-white/40 text-xs font-display uppercase tracking-widest mt-6 md:mt-8">
           Every project. Every time. No exceptions.
         </p>
       </Container>
