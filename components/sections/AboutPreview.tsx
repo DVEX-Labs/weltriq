@@ -35,7 +35,7 @@ const pillars = [
 
 export function AboutPreview() {
   return (
-    <Section className="bg-brand-white border-y border-brand-navy/5 overflow-hidden py-20 md:py-28 lg:py-32">
+    <Section className="bg-brand-white border-y border-brand-navy/5 overflow-hidden">
       <Container>
         <div className="flex flex-col gap-10 md:gap-14">
           {/* Header Block — Direct & Authoritative with Top-Right CTA */}

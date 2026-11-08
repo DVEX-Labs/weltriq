@@ -81,7 +81,7 @@ const DESKTOP_PATH_D =
 
 export function Process() {
   return (
-    <Section className="relative bg-[#FAFAFA] border-b border-brand-navy/5 overflow-hidden py-24 md:py-32">
+    <Section className="relative bg-[#FAFAFA] border-b border-brand-navy/5 overflow-hidden py-16 md:py-20 lg:py-24">
       {/* Precision Blueprint Coordinate Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c153308_1px,transparent_1px),linear-gradient(to_bottom,#0c153308_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,#000_65%,transparent_100%)] pointer-events-none" />
 
@@ -96,7 +96,7 @@ export function Process() {
       <div className="relative z-10 w-full">
         <Container>
           {/* Header */}
-          <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16 md:mb-24">
+          <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12 md:mb-16">
             <span className="text-xs font-display uppercase tracking-widest font-bold text-brand-navy/70 bg-brand-navy/5 px-4 py-1.5 rounded-full border border-brand-navy/10 mb-4 inline-block">
               Seamless Project Delivery
             </span>

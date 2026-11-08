@@ -73,7 +73,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       </section>
 
       {/* 2. Published Blog Grid OR Empty State */}
-      <Section className="bg-brand-island-spice py-16 md:py-24 border-b border-brand-navy/5 min-h-[400px]">
+      <Section className="bg-brand-island-spice py-16 md:py-20 lg:py-24 border-b border-brand-navy/5 min-h-[400px]">
         <Container>
           {total === 0 ? (
             <BlogEmptyState />

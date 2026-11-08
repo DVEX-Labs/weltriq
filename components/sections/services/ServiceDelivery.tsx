@@ -100,7 +100,7 @@ export function ServiceDelivery() {
   );
 
   return (
-    <Section className="relative bg-brand-white border-b border-brand-navy/5 py-12 md:py-16 lg:py-20 overflow-hidden">
+    <Section className="relative bg-brand-white border-b border-brand-navy/5 py-16 md:py-20 lg:py-24 overflow-hidden">
       {/* Subtle Background Architectural Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c153305_1px,transparent_1px),linear-gradient(to_bottom,#0c153305_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none" />
 

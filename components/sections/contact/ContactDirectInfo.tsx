@@ -6,7 +6,7 @@ import { MapPin, Phone, Mail, MessageSquare, ArrowUpRight } from "lucide-react";
 
 export function ContactDirectInfo() {
   return (
-    <Section className="bg-brand-white border-b border-brand-navy/10 py-20 md:py-28 relative overflow-hidden">
+    <Section className="bg-brand-white border-b border-brand-navy/10 py-16 md:py-20 lg:py-24 relative overflow-hidden">
       {/* Subtle Architectural Grid Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c153305_1px,transparent_1px),linear-gradient(to_bottom,#0c153305_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
 

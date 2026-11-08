@@ -24,7 +24,7 @@ export function FinalCTA() {
       {/* Yellow accent top border */}
       <div className="absolute top-0 left-0 right-0 h-[3px] bg-brand-yellow" />
 
-      <Container className="relative z-10 py-20 md:py-28 lg:py-32">
+      <Container className="relative z-10 py-16 md:py-20 lg:py-24">
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto space-y-7 md:space-y-9">
           <span className="text-xs font-display uppercase tracking-widest text-brand-navy/70 bg-brand-navy/5 px-4 py-1.5 rounded-full border border-brand-navy/10 inline-block">
             Ready to get started?

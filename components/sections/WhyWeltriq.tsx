@@ -42,7 +42,7 @@ export function WhyWeltriq() {
   return (
     <Section className="bg-white text-brand-navy border-b border-brand-navy/10 overflow-hidden">
       <Container>
-        <div className="flex flex-col gap-10 md:gap-14">
+        <div className="flex flex-col gap-8 md:gap-10">
 
           {/* TOP — Label + Heading (full width) */}
           <div className="space-y-3 max-w-3xl">
@@ -107,8 +107,8 @@ export function WhyWeltriq() {
 
           </div>
 
-          {/* Centered CTA Button (Option B) */}
-          <div className="flex justify-center mt-12 md:mt-16">
+          {/* Centered CTA Button */}
+          <div className="flex justify-center pt-2">
             <Button
               size="lg"
               variant="primary"

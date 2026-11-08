@@ -3,23 +3,43 @@
 import React, { useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
-import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { CheckCircle2, Clock, ShieldCheck, UserCheck } from "lucide-react";
+import {
+  CheckCircle2,
+  Clock,
+  ShieldCheck,
+  UserCheck,
+  User,
+  Phone,
+  Mail,
+  MapPin,
+  Wrench,
+  FileText,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
+import {
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  KERALA_DISTRICTS,
+  ROOFING_SERVICES,
+} from "@/components/ui/FormField";
 
 export function ContactEnquiry() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
-    projectType: "",
+    district: "",
     requirement: "",
     message: "",
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -27,12 +47,32 @@ export function ContactEnquiry() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate submission
-    setIsSubmitted(true);
+    if (!formData.district || !formData.requirement) {
+      return;
+    }
+    setIsSubmitting(true);
+
+    // Save lead to local storage for safety/testing
+    try {
+      const stored = localStorage.getItem("weltriq_enquiries");
+      const list = stored ? JSON.parse(stored) : [];
+      list.push({
+        ...formData,
+        date: new Date().toISOString(),
+      });
+      localStorage.setItem("weltriq_enquiries", JSON.stringify(list));
+    } catch {
+      // Ignore local storage error
+    }
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+    }, 700);
   };
 
   return (
-    <Section id="enquiry" className="bg-brand-white border-b border-brand-navy/5 pt-12 md:pt-16 pb-20 md:pb-28">
+    <Section id="enquiry" className="bg-brand-white border-b border-brand-navy/5 py-16 md:py-20 lg:py-24">
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column - Intro & Commitments */}
@@ -120,7 +160,7 @@ export function ContactEnquiry() {
                         name: "",
                         phone: "",
                         email: "",
-                        projectType: "",
+                        district: "",
                         requirement: "",
                         message: "",
                       });
@@ -130,129 +170,115 @@ export function ContactEnquiry() {
                   </Button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                <form onSubmit={handleSubmit} className="space-y-4 font-[system-ui,sans-serif]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     {/* Name */}
-                    <div className="space-y-2">
-                      <label htmlFor="name" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
-                        Your Name <span className="text-red-500">*</span>
-                      </label>
-                      <Input
-                        id="name"
-                        name="name"
-                        type="text"
-                        required
-                        placeholder="Enter full name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="bg-brand-white border-gray-200 rounded-lg h-11 focus-visible:border-brand-navy focus-visible:ring-brand-navy/10"
-                      />
-                    </div>
+                    <FormInput
+                      label="Full Name"
+                      icon={User}
+                      name="name"
+                      type="text"
+                      required
+                      placeholder="Enter your full name"
+                      value={formData.name}
+                      onChange={handleChange}
+                    />
 
                     {/* Phone */}
-                    <div className="space-y-2">
-                      <label htmlFor="phone" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
-                        Phone Number <span className="text-red-500">*</span>
-                      </label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        required
-                        placeholder="Enter phone number"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className="bg-brand-white border-gray-200 rounded-lg h-11 focus-visible:border-brand-navy focus-visible:ring-brand-navy/10"
-                      />
-                    </div>
+                    <FormInput
+                      label="Phone Number"
+                      icon={Phone}
+                      name="phone"
+                      type="tel"
+                      required
+                      placeholder="Enter your phone number (e.g. +91 97475 06015)"
+                      value={formData.phone}
+                      onChange={handleChange}
+                    />
                   </div>
 
                   {/* Email */}
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
-                      Email Address <span className="text-red-500">*</span>
-                    </label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
+                  <FormInput
+                    label="Email Address"
+                    icon={Mail}
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="Enter your email address"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+
+                  {/* District & Roofing Requirement Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <FormSelect
+                      label="District (Kerala)"
+                      icon={MapPin}
+                      name="district"
+                      value={formData.district}
+                      placeholder="Select District"
+                      options={KERALA_DISTRICTS}
                       required
-                      placeholder="name@example.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="bg-brand-white border-gray-200 rounded-lg h-11 focus-visible:border-brand-navy focus-visible:ring-brand-navy/10"
+                      onChange={(val) => setFormData((prev) => ({ ...prev, district: val }))}
+                    />
+
+                    <FormSelect
+                      label="Roofing Requirement"
+                      icon={Wrench}
+                      name="requirement"
+                      value={formData.requirement}
+                      placeholder="Select Roofing Requirement"
+                      options={ROOFING_SERVICES}
+                      required
+                      onChange={(val) => setFormData((prev) => ({ ...prev, requirement: val }))}
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-                    {/* Project Type */}
-                    <div className="space-y-2">
-                      <label htmlFor="projectType" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
-                        Project Type <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        id="projectType"
-                        name="projectType"
-                        value={formData.projectType}
-                        onChange={handleChange}
-                        required
-                        className="flex h-11 w-full rounded-lg border border-gray-200 bg-brand-white px-3.5 py-2.5 text-sm focus-visible:outline-none focus-visible:border-brand-navy focus-visible:ring-2 focus-visible:ring-brand-navy/10 font-sans text-brand-navy transition-all"
-                      >
-                        <option value="" disabled>Select project type</option>
-                        <option value="Residential">Residential</option>
-                        <option value="Commercial">Commercial</option>
-                        <option value="Industrial">Industrial</option>
-                      </select>
-                    </div>
-
-                    {/* Requirement */}
-                    <div className="space-y-2">
-                      <label htmlFor="requirement" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
-                        Roofing Requirement <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        id="requirement"
-                        name="requirement"
-                        value={formData.requirement}
-                        onChange={handleChange}
-                        required
-                        className="flex h-11 w-full rounded-lg border border-gray-200 bg-brand-white px-3.5 py-2.5 text-sm focus-visible:outline-none focus-visible:border-brand-navy focus-visible:ring-2 focus-visible:ring-brand-navy/10 font-sans text-brand-navy transition-all"
-                      >
-                        <option value="" disabled>Select roofing requirement</option>
-                        <option value="Clay Tile Roofing">Clay Tile Roofing</option>
-                        <option value="Metal Roofing">Metal Roofing</option>
-                        <option value="Ceramic Roofing">Ceramic Roofing</option>
-                        <option value="Polycarbonate Roofing">Polycarbonate Roofing</option>
-                        <option value="Shingles Roofing">Shingles Roofing</option>
-                        <option value="UPVC Roofing">UPVC Roofing</option>
-                        <option value="Stone Coated Roofing">Stone Coated Roofing</option>
-                        <option value="Roofing Sheet Installation">Roofing Sheet Installation</option>
-                        <option value="Roof Renovation">Roof Renovation</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Message */}
-                  <div className="space-y-2">
-                    <label htmlFor="message" className="block text-xs font-display uppercase tracking-wider text-brand-navy">
-                      Message / Project Details
-                    </label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      rows={4}
-                      placeholder="Describe your roofing project, location, or timeline requirements..."
-                      value={formData.message}
-                      onChange={handleChange}
-                      className="bg-brand-white border-gray-200 rounded-lg p-3.5 text-brand-navy resize-y min-h-[110px] focus-visible:border-brand-navy focus-visible:ring-brand-navy/10"
-                    />
-                  </div>
+                  {/* Location Details & Message */}
+                  <FormTextarea
+                    label="Location Details & Project Description"
+                    icon={FileText}
+                    name="message"
+                    required
+                    rows={3}
+                    placeholder="Enter location/landmark and describe your roofing requirements..."
+                    value={formData.message}
+                    onChange={handleChange}
+                  />
 
                   {/* Submit Button */}
-                  <Button type="submit" variant="primary" size="lg" className="w-full text-sm font-display uppercase tracking-wider font-bold py-3.5">
-                    Submit Enquiry
-                  </Button>
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full h-12 bg-brand-navy text-brand-white hover:bg-brand-navy/90 hover:shadow-lg font-display uppercase tracking-wider text-sm rounded-lg border border-brand-navy shadow-md active:translate-y-0 hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-inherit" />
+                          <span>Submitting Enquiry...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Submit Enquiry</span>
+                          <ArrowRight className="w-4 h-4 stroke-[2.5] text-inherit" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Trust Micro-badges */}
+                  <div className="flex items-center justify-center gap-4 pt-1 text-[11px] text-brand-navy/70 font-sans font-medium">
+                    <span className="flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-brand-navy" />
+                      100% Free Consultation
+                    </span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-brand-navy" />
+                      Guaranteed 24-Hr Response
+                    </span>
+                  </div>
                 </form>
               )}
             </div>

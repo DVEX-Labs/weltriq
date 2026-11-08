@@ -78,7 +78,7 @@ export function WeltriqPromise() {
         </div>
 
         {/* CTA Button */}
-        <div className="flex justify-center mt-10 md:mt-12">
+        <div className="flex justify-center mt-8 md:mt-10">
           <Button
             size="lg"
             variant="primary"
@@ -91,7 +91,7 @@ export function WeltriqPromise() {
         </div>
 
         {/* Bottom Tagline */}
-        <p className="text-center text-brand-white/40 text-xs font-display uppercase tracking-widest mt-6 md:mt-8">
+        <p className="text-center text-brand-white/40 text-xs font-display uppercase tracking-widest mt-5 md:mt-6">
           Every project. Every time. No exceptions.
         </p>
       </Container>

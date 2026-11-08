@@ -77,7 +77,7 @@ export function AboutPhilosophy() {
   );
 
   return (
-    <Section className="relative bg-brand-white text-brand-navy border-b border-brand-navy/10 py-16 md:py-24 lg:py-28 overflow-hidden">
+    <Section className="relative bg-brand-white text-brand-navy border-b border-brand-navy/10 py-16 md:py-20 lg:py-24 overflow-hidden">
       {/* Subtle Architectural Grid Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c153305_1px,transparent_1px),linear-gradient(to_bottom,#0c153305_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] pointer-events-none" />
 

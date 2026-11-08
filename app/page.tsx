@@ -20,7 +20,7 @@ export default function HomePage() {
       <HomeHeroScroll />
 
       {/* Trust / Positioning Statement */}
-      <Section className="bg-brand-island-spice border-b border-brand-navy/5">
+      <Section className="bg-brand-island-spice border-b border-brand-navy/5 py-12 md:py-16">
         <Container>
           <div className="max-w-4xl mx-auto text-center space-y-5">
             <h2 className="text-3xl md:text-4xl font-display uppercase text-brand-navy leading-tight">

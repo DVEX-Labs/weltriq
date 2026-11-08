@@ -228,7 +228,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
 
       {/* Related Articles Section (Only rendered when suitable published articles exist) */}
       {related.length > 0 && (
-        <Section className="bg-brand-white border-t border-brand-navy/10 py-16 md:py-24">
+        <Section className="bg-brand-white border-t border-brand-navy/10 py-16 md:py-20 lg:py-24">
           <Container>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
               <div>

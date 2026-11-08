@@ -22,7 +22,7 @@ export function ServicesShowcase({
 
   return (
     <section
-      className="relative w-full bg-brand-white pt-16 md:pt-20 lg:pt-24 pb-12 md:pb-16 border-b border-brand-navy/5 overflow-visible"
+      className="relative w-full bg-brand-white py-16 md:py-20 lg:py-24 border-b border-brand-navy/5 overflow-visible"
       id="services-showcase"
     >
       <Container className="relative z-10 w-full mb-8 md:mb-12">
@@ -98,11 +98,11 @@ export function ServicesShowcase({
             );
           })}
 
-          {/* In-Flow Scroll Track Spacer: gives the final card the exact same holding scroll plateau as preceding cards before smooth unpinning */}
+          {/* In-Flow Scroll Track Spacer: calibrated holding plateau to cleanly transition to button */}
           <div
             className="block pointer-events-none"
             style={{
-              height: "clamp(240px, 40vh, 500px)",
+              height: "clamp(60px, 12vh, 120px)",
             }}
             aria-hidden="true"
           />
@@ -110,7 +110,7 @@ export function ServicesShowcase({
 
         {/* Centered Primary View All Services Button */}
         {showViewAll && (
-          <div className="pt-8 md:pt-10 flex justify-center relative z-20">
+          <div className="pt-4 md:pt-6 flex justify-center relative z-20">
             <Button
               variant="primary"
               size="lg"

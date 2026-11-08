@@ -6,7 +6,7 @@ import { Target, Eye } from "lucide-react";
 
 export function AboutMissionVision() {
   return (
-    <Section className="bg-brand-white text-brand-navy py-16 md:py-20 relative overflow-hidden border-b border-brand-navy/10">
+    <Section className="bg-brand-white text-brand-navy py-16 md:py-20 lg:py-24 relative overflow-hidden border-b border-brand-navy/10">
       {/* Background Subtle Accent Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c153305_1px,transparent_1px),linear-gradient(to_bottom,#0c153305_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
 
