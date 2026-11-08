@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -80,6 +80,8 @@ const DESKTOP_PATH_D =
   "L 560 1520";
 
 export function Process() {
+  const [activeStep, setActiveStep] = useState<string>("01");
+
   return (
     <Section className="relative bg-[#FAFAFA] border-b border-brand-navy/5 overflow-hidden py-16 md:py-20 lg:py-24">
       {/* Precision Blueprint Coordinate Grid Background */}
@@ -168,11 +170,12 @@ export function Process() {
               })}
             </svg>
 
-            {/* Desktop Milestone Items (Pins + Alternating Cards) — Always 100% Visible */}
+            {/* Desktop Milestone Items (Pins + Alternating Cards) — Fully Interactive */}
             {steps.map((step, index) => {
               const IconComponent = step.icon;
               const pin = DESKTOP_PINS[index];
               const isLeft = pin.side === "left";
+              const isActive = activeStep === step.id;
 
               return (
                 <div key={step.id}>
@@ -182,12 +185,25 @@ export function Process() {
                       left: `${(pin.x / 1000) * 100}%`,
                       top: `${(pin.y / 1560) * 100}%`,
                     }}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center cursor-default group"
+                    className="absolute -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center cursor-pointer group"
+                    onClick={() => setActiveStep(step.id)}
                   >
                     {/* Outer Target Ring */}
-                    <div className="w-12 h-12 rounded-full border border-brand-navy/30 bg-white/95 backdrop-blur-xs flex items-center justify-center shadow-xs transition-transform duration-300 group-hover:scale-110">
+                    <div
+                      className={`w-12 h-12 rounded-full border bg-white/95 backdrop-blur-xs flex items-center justify-center transition-all duration-300 ${
+                        isActive
+                          ? "scale-115 border-brand-navy ring-4 ring-brand-navy/15 shadow-md"
+                          : "border-brand-navy/30 shadow-xs group-hover:scale-110"
+                      }`}
+                    >
                       {/* Inner Solid Black Pin with Numeral */}
-                      <div className="w-8 h-8 rounded-full bg-brand-navy text-white flex items-center justify-center font-display font-bold text-xs tracking-wider shadow-sm">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-display font-bold text-xs tracking-wider transition-colors duration-200 ${
+                          isActive
+                            ? "bg-brand-navy text-white shadow-sm"
+                            : "bg-brand-navy text-white"
+                        }`}
+                      >
                         {step.id}
                       </div>
                     </div>
@@ -203,29 +219,71 @@ export function Process() {
                       isLeft ? "left-6 xl:left-8" : "right-6 xl:right-8"
                     }`}
                   >
-                    <div className="relative rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 active:scale-[0.985] active:shadow-md transition-all duration-300 group overflow-hidden touch-manipulation cursor-pointer select-none">
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setActiveStep(step.id)}
+                      onMouseEnter={() => setActiveStep(step.id)}
+                      className={`relative rounded-2xl p-6 transition-all duration-300 group overflow-hidden touch-manipulation cursor-pointer select-none ${
+                        isActive
+                          ? "border-2 border-brand-navy/35 bg-white shadow-xl -translate-y-1.5"
+                          : "border border-brand-navy/10 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1"
+                      }`}
+                    >
                       {/* Top Hairline Active Bar */}
-                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-brand-navy/15 group-hover:bg-brand-navy group-active:bg-brand-navy transition-colors duration-300" />
+                      <div
+                        className={`absolute top-0 left-0 right-0 transition-all duration-300 ${
+                          isActive
+                            ? "h-[3px] bg-brand-navy"
+                            : "h-[2px] bg-brand-navy/15 group-hover:bg-brand-navy"
+                        }`}
+                      />
 
                       {/* Header: Phase Pill + Architectural Icon */}
                       <div className="flex items-center justify-between mb-3">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-display font-bold uppercase tracking-wider bg-brand-navy/5 text-brand-navy/70 border border-brand-navy/10">
-                          <span className="w-1.5 h-1.5 rounded-full bg-brand-navy/40 group-hover:bg-brand-navy group-active:bg-brand-navy transition-colors" />
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-display font-bold uppercase tracking-wider transition-colors ${
+                            isActive
+                              ? "bg-brand-navy/10 text-brand-navy border border-brand-navy/20 font-bold"
+                              : "bg-brand-navy/5 text-brand-navy/70 border border-brand-navy/10"
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full transition-all ${
+                              isActive
+                                ? "bg-brand-navy scale-125"
+                                : "bg-brand-navy/40 group-hover:bg-brand-navy"
+                            }`}
+                          />
                           {step.phase}
                         </span>
 
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-island-spice text-brand-navy group-hover:bg-brand-navy group-hover:text-white group-active:bg-brand-navy group-active:text-white transition-all duration-300 shadow-2xs">
+                        <div
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300 shadow-2xs ${
+                            isActive
+                              ? "bg-brand-navy text-white scale-105"
+                              : "bg-brand-island-spice text-brand-navy group-hover:bg-brand-navy group-hover:text-white"
+                          }`}
+                        >
                           <IconComponent className="h-4 w-4 stroke-[2]" />
                         </div>
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-base font-display font-bold uppercase text-brand-navy tracking-wide mb-2 group-hover:text-brand-navy transition-colors">
+                      <h3
+                        className={`text-base font-display font-bold uppercase tracking-wide mb-2 transition-colors ${
+                          isActive ? "text-brand-navy font-bold" : "text-brand-navy group-hover:text-brand-navy"
+                        }`}
+                      >
                         {step.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-xs sm:text-sm text-brand-navy/65 font-sans leading-relaxed">
+                      <p
+                        className={`text-xs sm:text-sm font-sans leading-relaxed transition-colors ${
+                          isActive ? "text-brand-navy/85" : "text-brand-navy/65"
+                        }`}
+                      >
                         {step.description}
                       </p>
                     </div>
@@ -283,41 +341,100 @@ export function Process() {
               />
             </svg>
 
-            {/* Mobile & Tablet Stacked Items — Responsive Touch & Hover Feedback */}
+            {/* Mobile & Tablet Stacked Items — Responsive Touch & Tap to Activate */}
             <div className="flex flex-col gap-8 sm:gap-10">
               {steps.map((step) => {
                 const IconComponent = step.icon;
+                const isActive = activeStep === step.id;
 
                 return (
-                  <div key={step.id} className="group relative flex items-start gap-5 sm:gap-7 cursor-pointer select-none touch-manipulation">
+                  <div
+                    key={step.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={isActive}
+                    onClick={() => setActiveStep(step.id)}
+                    onTouchStart={() => setActiveStep(step.id)}
+                    className="group relative flex items-start gap-5 sm:gap-7 cursor-pointer select-none touch-manipulation focus:outline-none"
+                  >
                     {/* Concentric Survey Pin on Spine */}
-                    <div className="relative z-20 -ml-6 sm:-ml-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-brand-navy/30 bg-white/95 shadow-xs mt-2 transition-transform duration-200 group-hover:scale-110 group-active:scale-105">
-                      <div className="w-7 h-7 rounded-full bg-brand-navy text-white flex items-center justify-center font-display font-bold text-xs tracking-wider">
+                    <div
+                      className={`relative z-20 -ml-6 sm:-ml-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 mt-2 ${
+                        isActive
+                          ? "scale-115 border-2 border-brand-navy ring-4 ring-brand-navy/15 bg-white shadow-md"
+                          : "border border-brand-navy/30 bg-white/95 shadow-xs group-hover:scale-110 group-active:scale-105"
+                      }`}
+                    >
+                      <div
+                        className={`w-7 h-7 rounded-full flex items-center justify-center font-display font-bold text-xs tracking-wider transition-colors duration-200 ${
+                          isActive
+                            ? "bg-brand-navy text-white shadow-xs"
+                            : "bg-brand-navy text-white"
+                        }`}
+                      >
                         {step.id}
                       </div>
                     </div>
 
                     {/* Card Content with Responsive Touch & Hover States */}
-                    <div className="relative flex-1 rounded-2xl border border-brand-navy/10 bg-white p-5 sm:p-6 shadow-sm hover:shadow-lg hover:border-brand-navy/25 active:border-brand-navy/35 active:scale-[0.985] active:shadow-xs transition-all duration-200 overflow-hidden">
+                    <div
+                      className={`relative flex-1 rounded-2xl p-5 sm:p-6 transition-all duration-300 overflow-hidden ${
+                        isActive
+                          ? "border-2 border-brand-navy/35 bg-white shadow-md -translate-y-0.5"
+                          : "border border-brand-navy/10 bg-white shadow-sm hover:shadow-lg hover:border-brand-navy/25 active:border-brand-navy/35 active:scale-[0.985] active:shadow-xs"
+                      }`}
+                    >
                       {/* Top Hairline Active Bar */}
-                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-brand-navy/15 group-hover:bg-brand-navy group-active:bg-brand-navy transition-colors duration-200" />
+                      <div
+                        className={`absolute top-0 left-0 right-0 transition-all duration-300 ${
+                          isActive
+                            ? "h-[3px] bg-brand-navy"
+                            : "h-[2px] bg-brand-navy/15 group-hover:bg-brand-navy"
+                        }`}
+                      />
 
                       <div className="flex items-center justify-between mb-2.5">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-display font-bold uppercase tracking-wider bg-brand-navy/5 text-brand-navy/70 border border-brand-navy/10">
-                          <span className="w-1.5 h-1.5 rounded-full bg-brand-navy/40 group-hover:bg-brand-navy group-active:bg-brand-navy transition-colors duration-200" />
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-display font-bold uppercase tracking-wider transition-colors duration-200 ${
+                            isActive
+                              ? "bg-brand-navy/10 text-brand-navy border border-brand-navy/20 font-bold"
+                              : "bg-brand-navy/5 text-brand-navy/70 border border-brand-navy/10"
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+                              isActive
+                                ? "bg-brand-navy scale-125"
+                                : "bg-brand-navy/40 group-hover:bg-brand-navy"
+                            }`}
+                          />
                           {step.phase}
                         </span>
 
-                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-island-spice text-brand-navy group-hover:bg-brand-navy group-hover:text-white group-active:bg-brand-navy group-active:text-white transition-all duration-200 shadow-2xs">
+                        <div
+                          className={`flex h-7 w-7 items-center justify-center rounded-lg transition-all duration-300 shadow-2xs ${
+                            isActive
+                              ? "bg-brand-navy text-white scale-105"
+                              : "bg-brand-island-spice text-brand-navy group-hover:bg-brand-navy group-hover:text-white"
+                          }`}
+                        >
                           <IconComponent className="h-3.5 w-3.5 stroke-[2]" />
                         </div>
                       </div>
 
-                      <h3 className="text-base font-display font-bold uppercase text-brand-navy mb-1.5 group-hover:text-brand-navy transition-colors">
+                      <h3
+                        className={`text-base font-display font-bold uppercase mb-1.5 transition-colors ${
+                          isActive ? "text-brand-navy" : "text-brand-navy group-hover:text-brand-navy"
+                        }`}
+                      >
                         {step.title}
                       </h3>
 
-                      <p className="text-xs sm:text-sm text-brand-navy/65 font-sans leading-relaxed">
+                      <p
+                        className={`text-xs sm:text-sm font-sans leading-relaxed transition-colors ${
+                          isActive ? "text-brand-navy/85" : "text-brand-navy/65"
+                        }`}
+                      >
                         {step.description}
                       </p>
                     </div>

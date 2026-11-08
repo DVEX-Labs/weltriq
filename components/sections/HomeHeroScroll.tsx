@@ -39,15 +39,31 @@ export function HomeHeroScroll() {
     <section className="relative w-full min-h-[85dvh] sm:min-h-[90vh] lg:min-h-screen flex items-center justify-center overflow-hidden bg-black pt-24 sm:pt-28 pb-14 sm:pb-16 lg:py-24">
       {/* Background Hero Image with Priority Loading */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/hero/hero.png"
-          alt="WELTRIQ Kerala Architectural Roofing Solutions"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[center_12%] sm:object-[center_20%] md:object-[center_28%] lg:object-[center_32%] transform scale-100 animate-in fade-in duration-1000"
-          quality={90}
-        />
+        {/* Mobile & Tablet Optimized Hero Image (< 1024px): 9:16 Portrait Framing keeps full house & sky uncropped */}
+        <div className="lg:hidden absolute inset-0">
+          <Image
+            src="/images/hero/hero-mobile.png"
+            alt="WELTRIQ Kerala Architectural Roofing Solutions"
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 1px"
+            className="object-cover object-[center_30%] sm:object-[center_38%] transform scale-100 animate-in fade-in duration-1000"
+            quality={92}
+          />
+        </div>
+
+        {/* Desktop Widescreen Hero Image (≥ 1024px): 16:9 Landscape Framing */}
+        <div className="hidden lg:block absolute inset-0">
+          <Image
+            src="/images/hero/hero.png"
+            alt="WELTRIQ Kerala Architectural Roofing Solutions"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[center_32%] transform scale-100 animate-in fade-in duration-1000"
+            quality={90}
+          />
+        </div>
 
         {/* Realistic Twilight Lighting Overlays — Preserves open sky vibrancy, uncrops villa, and ensures crisp white text legibility */}
         {/* 1. Subtle top scrim for navbar navigation icons */}
@@ -57,7 +73,7 @@ export function HomeHeroScroll() {
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-transparent to-black/70 pointer-events-none" />
 
         {/* 3. Centered radial text-contrast veil: keeps white typography sharp while leaving sky and house open and luminous */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_65%_55%_at_50%_46%,rgba(10,17,40,0.5)_0%,rgba(10,17,40,0.18)_55%,transparent_100%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_60%_at_50%_42%,rgba(10,17,40,0.52)_0%,rgba(10,17,40,0.18)_55%,transparent_100%)] pointer-events-none" />
 
         {/* 4. Bottom seamless transition to section below */}
         <div className="absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
