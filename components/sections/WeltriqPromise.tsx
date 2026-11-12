@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
@@ -30,6 +30,7 @@ const promises = [
 
 export function WeltriqPromise() {
   const { openModal } = useInspectionModal();
+  const [activePromise, setActivePromise] = useState<string>("01");
 
   return (
     <Section className="bg-brand-navy text-brand-white overflow-hidden">
@@ -44,37 +45,71 @@ export function WeltriqPromise() {
           </h2>
         </div>
 
-        {/* Promise Grid */}
+        {/* Promise Grid — Responsive Touch & Hover Active Feedback */}
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10 max-w-5xl mx-auto border border-white/10 rounded-sm overflow-hidden">
-          {promises.map((promise) => (
-            <div
-              key={promise.id}
-              className="group relative p-8 md:p-10 lg:p-12 flex flex-col gap-4 hover:bg-white/[0.04] transition-colors duration-300"
-            >
-              {/* Index */}
-              <span className="text-xs font-display font-bold uppercase tracking-widest text-brand-white/40 group-hover:text-brand-white transition-colors duration-300">
-                {promise.id}
-              </span>
+          {promises.map((promise) => {
+            const isActive = activePromise === promise.id;
 
-              {/* Large Value */}
-              <div className="text-5xl md:text-6xl lg:text-7xl font-display uppercase font-bold text-brand-white leading-none tracking-tight">
-                {promise.value}
+            return (
+              <div
+                key={promise.id}
+                role="button"
+                tabIndex={0}
+                aria-pressed={isActive}
+                onClick={() => setActivePromise(promise.id)}
+                onTouchStart={() => setActivePromise(promise.id)}
+                onMouseEnter={() => setActivePromise(promise.id)}
+                className={`group relative p-8 md:p-10 lg:p-12 flex flex-col gap-4 cursor-pointer select-none touch-manipulation transition-all duration-300 focus:outline-none ${
+                  isActive
+                    ? "bg-white/[0.08]"
+                    : "bg-transparent hover:bg-white/[0.04] active:bg-white/[0.06]"
+                }`}
+              >
+                {/* Index */}
+                <span
+                  className={`text-xs font-display font-bold uppercase tracking-widest transition-colors duration-300 ${
+                    isActive ? "text-brand-white" : "text-brand-white/40 group-hover:text-brand-white"
+                  }`}
+                >
+                  {promise.id}
+                </span>
+
+                {/* Large Value */}
+                <div
+                  className={`text-5xl md:text-6xl lg:text-7xl font-display uppercase font-bold text-brand-white leading-none tracking-tight transition-transform duration-300 ${
+                    isActive ? "scale-[1.02]" : ""
+                  }`}
+                >
+                  {promise.value}
+                </div>
+
+                {/* Title */}
+                <h3
+                  className={`text-lg md:text-xl font-display uppercase tracking-wide transition-colors duration-300 ${
+                    isActive ? "text-brand-white" : "text-brand-white/80 group-hover:text-brand-white"
+                  }`}
+                >
+                  {promise.title}
+                </h3>
+
+                {/* Detail */}
+                <p
+                  className={`text-sm md:text-base leading-relaxed font-sans mt-auto transition-colors duration-300 ${
+                    isActive ? "text-brand-white/75" : "text-brand-white/50"
+                  }`}
+                >
+                  {promise.detail}
+                </p>
+
+                {/* Bottom accent line — Active on touch/tap & hover */}
+                <div
+                  className={`absolute bottom-0 left-0 h-[3px] bg-brand-yellow transition-all duration-500 ease-out ${
+                    isActive ? "w-full" : "w-0 group-hover:w-full group-active:w-full"
+                  }`}
+                />
               </div>
-
-              {/* Title */}
-              <h3 className="text-lg md:text-xl font-display uppercase tracking-wide text-brand-white/80 group-hover:text-brand-white transition-colors duration-300">
-                {promise.title}
-              </h3>
-
-              {/* Detail */}
-              <p className="text-sm md:text-base text-brand-white/50 leading-relaxed font-sans mt-auto">
-                {promise.detail}
-              </p>
-
-              {/* Bottom accent line */}
-              <div className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full bg-brand-yellow transition-all duration-500" />
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* CTA Button */}

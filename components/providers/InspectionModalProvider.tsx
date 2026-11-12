@@ -94,7 +94,7 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.district || !formData.service) {
+    if (!formData.name || !formData.phone) {
       return;
     }
     setIsSubmitting(true);
@@ -238,7 +238,6 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
                         value={formData.district}
                         placeholder="Select District"
                         options={KERALA_DISTRICTS}
-                        required
                         onChange={(val) => setFormData((prev) => ({ ...prev, district: val }))}
                       />
 
@@ -249,7 +248,6 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
                         value={formData.service}
                         placeholder="Select Project Type"
                         options={ROOFING_SERVICES}
-                        required
                         onChange={(val) => setFormData((prev) => ({ ...prev, service: val }))}
                       />
                     </div>
@@ -259,7 +257,6 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
                       label="Location Details & Project Description"
                       icon={MapPin}
                       name="notes"
-                      required
                       rows={3}
                       value={formData.notes}
                       onChange={handleChange}

@@ -28,10 +28,10 @@ export function ContactDirectInfo() {
             href="https://maps.google.com/?q=Weltriq+Roofing+Palakkad+Kerala"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-2xl border border-gray-200 bg-brand-white p-6 sm:p-7 shadow-[0_4px_24px_rgba(12,21,51,0.05)] hover:shadow-[0_18px_48px_rgba(12,21,51,0.1)] hover:border-brand-navy/30 transform-gpu hover:-translate-y-1.5 transition-all duration-300 ease-out flex flex-col justify-between group min-h-[270px]"
+            className="rounded-2xl border border-gray-200 bg-brand-white p-6 sm:p-7 shadow-[0_4px_24px_rgba(12,21,51,0.05)] hover:shadow-[0_18px_48px_rgba(12,21,51,0.1)] hover:border-brand-navy/30 active:scale-[0.985] active:border-brand-navy/35 active:shadow-md transform-gpu hover:-translate-y-1.5 touch-manipulation cursor-pointer select-none transition-all duration-300 ease-out flex flex-col justify-between group min-h-[270px]"
           >
             <div className="space-y-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-navy/5 text-brand-navy border border-brand-navy/10 transition-colors duration-300 group-hover:bg-brand-navy group-hover:text-brand-white">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-navy/5 text-brand-navy border border-brand-navy/10 transition-colors duration-300 group-hover:bg-brand-navy group-hover:text-brand-white group-active:bg-brand-navy group-active:text-brand-white">
                 <MapPin className="w-5 h-5 stroke-[2]" />
               </div>
               <div>
@@ -49,18 +49,17 @@ export function ContactDirectInfo() {
             </div>
 
             <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-              <span className="text-xs font-display uppercase tracking-wider text-brand-navy group-hover:text-brand-navy/80 transition-colors">
+              <span className="text-xs font-display uppercase tracking-wider text-brand-navy group-hover:text-brand-navy/80 group-active:text-brand-navy/90 transition-colors">
                 View on Maps
               </span>
-              <div className="w-7 h-7 rounded-full bg-brand-navy/5 text-brand-navy flex items-center justify-center shrink-0 group-hover:bg-brand-navy group-hover:text-brand-white transition-all duration-300">
-                <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.2] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <div className="w-7 h-7 rounded-full bg-brand-navy/5 text-brand-navy flex items-center justify-center shrink-0 group-hover:bg-brand-navy group-hover:text-brand-white group-active:bg-brand-navy group-active:text-brand-white transition-all duration-300">
+                <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.2] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-active:translate-x-0.5 group-active:-translate-y-0.5 transition-transform" />
               </div>
             </div>
           </a>
 
           {/* Phone Card */}
-          <a
-            href="tel:+919747506015"
+          <div
             className="rounded-2xl border border-gray-200 bg-brand-white p-6 sm:p-7 shadow-[0_4px_24px_rgba(12,21,51,0.05)] hover:shadow-[0_18px_48px_rgba(12,21,51,0.1)] hover:border-brand-navy/30 transform-gpu hover:-translate-y-1.5 transition-all duration-300 ease-out flex flex-col justify-between group min-h-[270px]"
           >
             <div className="space-y-4">
@@ -68,12 +67,23 @@ export function ContactDirectInfo() {
                 <Phone className="w-5 h-5 stroke-[2]" />
               </div>
               <div>
-                <span className="text-[11px] font-display uppercase tracking-wider text-brand-navy/50">
+                <span className="text-[11px] font-display uppercase tracking-wider text-brand-navy/50 block">
                   Call Us Directly
                 </span>
-                <h3 className="text-lg font-display text-brand-navy mt-1 tracking-wide">
-                  +91 97475 06015
-                </h3>
+                <div className="mt-1 space-y-1">
+                  <a
+                    href="tel:+919747506015"
+                    className="block text-base sm:text-lg font-display text-brand-navy tracking-wide hover:text-brand-yellow transition-colors"
+                  >
+                    +91 97475 06015
+                  </a>
+                  <a
+                    href="tel:+918136983928"
+                    className="block text-base sm:text-lg font-display text-brand-navy tracking-wide hover:text-brand-yellow transition-colors"
+                  >
+                    +91 81369 83928
+                  </a>
+                </div>
                 <div className="text-xs sm:text-sm text-brand-navy/70 leading-relaxed font-sans mt-2 space-y-0.5">
                   <p className="whitespace-nowrap">Mon – Sat: 9:00 AM – 6:30 PM</p>
                   <p className="text-brand-navy/60">Direct engineer consultation</p>
@@ -85,19 +95,23 @@ export function ContactDirectInfo() {
               <span className="text-xs font-display uppercase tracking-wider text-brand-navy group-hover:text-brand-navy/80 transition-colors">
                 Call Now
               </span>
-              <div className="w-7 h-7 rounded-full bg-brand-navy/5 text-brand-navy flex items-center justify-center shrink-0 group-hover:bg-brand-navy group-hover:text-brand-white transition-all duration-300">
+              <a
+                href="tel:+919747506015"
+                className="w-7 h-7 rounded-full bg-brand-navy/5 text-brand-navy flex items-center justify-center shrink-0 group-hover:bg-brand-navy group-hover:text-brand-white transition-all duration-300"
+                aria-label="Call primary number"
+              >
                 <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.2] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </div>
+              </a>
             </div>
-          </a>
+          </div>
 
           {/* Email Card */}
           <a
             href="mailto:info@weltriq.in"
-            className="rounded-2xl border border-gray-200 bg-brand-white p-6 sm:p-7 shadow-[0_4px_24px_rgba(12,21,51,0.05)] hover:shadow-[0_18px_48px_rgba(12,21,51,0.1)] hover:border-brand-navy/30 transform-gpu hover:-translate-y-1.5 transition-all duration-300 ease-out flex flex-col justify-between group min-h-[270px]"
+            className="rounded-2xl border border-gray-200 bg-brand-white p-6 sm:p-7 shadow-[0_4px_24px_rgba(12,21,51,0.05)] hover:shadow-[0_18px_48px_rgba(12,21,51,0.1)] hover:border-brand-navy/30 active:scale-[0.985] active:border-brand-navy/35 active:shadow-md transform-gpu hover:-translate-y-1.5 touch-manipulation cursor-pointer select-none transition-all duration-300 ease-out flex flex-col justify-between group min-h-[270px]"
           >
             <div className="space-y-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-navy/5 text-brand-navy border border-brand-navy/10 transition-colors duration-300 group-hover:bg-brand-navy group-hover:text-brand-white">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-navy/5 text-brand-navy border border-brand-navy/10 transition-colors duration-300 group-hover:bg-brand-navy group-hover:text-brand-white group-active:bg-brand-navy group-active:text-brand-white">
                 <Mail className="w-5 h-5 stroke-[2]" />
               </div>
               <div>
@@ -115,11 +129,11 @@ export function ContactDirectInfo() {
             </div>
 
             <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-              <span className="text-xs font-display uppercase tracking-wider text-brand-navy group-hover:text-brand-navy/80 transition-colors">
+              <span className="text-xs font-display uppercase tracking-wider text-brand-navy group-hover:text-brand-navy/80 group-active:text-brand-navy/90 transition-colors">
                 Send Email
               </span>
-              <div className="w-7 h-7 rounded-full bg-brand-navy/5 text-brand-navy flex items-center justify-center shrink-0 group-hover:bg-brand-navy group-hover:text-brand-white transition-all duration-300">
-                <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.2] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <div className="w-7 h-7 rounded-full bg-brand-navy/5 text-brand-navy flex items-center justify-center shrink-0 group-hover:bg-brand-navy group-hover:text-brand-white group-active:bg-brand-navy group-active:text-brand-white transition-all duration-300">
+                <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.2] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-active:translate-x-0.5 group-active:-translate-y-0.5 transition-transform" />
               </div>
             </div>
           </a>
@@ -129,10 +143,10 @@ export function ContactDirectInfo() {
             href="https://wa.me/919747506015"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-2xl border border-gray-200 bg-brand-white p-6 sm:p-7 shadow-[0_4px_24px_rgba(12,21,51,0.05)] hover:shadow-[0_18px_48px_rgba(12,21,51,0.1)] hover:border-brand-navy/30 transform-gpu hover:-translate-y-1.5 transition-all duration-300 ease-out flex flex-col justify-between group min-h-[270px]"
+            className="rounded-2xl border border-gray-200 bg-brand-white p-6 sm:p-7 shadow-[0_4px_24px_rgba(12,21,51,0.05)] hover:shadow-[0_18px_48px_rgba(12,21,51,0.1)] hover:border-brand-navy/30 active:scale-[0.985] active:border-brand-navy/35 active:shadow-md transform-gpu hover:-translate-y-1.5 touch-manipulation cursor-pointer select-none transition-all duration-300 ease-out flex flex-col justify-between group min-h-[270px]"
           >
             <div className="space-y-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-navy/5 text-brand-navy border border-brand-navy/10 transition-colors duration-300 group-hover:bg-brand-navy group-hover:text-brand-white">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-navy/5 text-brand-navy border border-brand-navy/10 transition-colors duration-300 group-hover:bg-brand-navy group-hover:text-brand-white group-active:bg-brand-navy group-active:text-brand-white">
                 <MessageSquare className="w-5 h-5 stroke-[2]" />
               </div>
               <div>
@@ -150,11 +164,11 @@ export function ContactDirectInfo() {
             </div>
 
             <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-              <span className="text-xs font-display uppercase tracking-wider text-brand-navy group-hover:text-brand-navy/80 transition-colors">
+              <span className="text-xs font-display uppercase tracking-wider text-brand-navy group-hover:text-brand-navy/80 group-active:text-brand-navy/90 transition-colors">
                 Chat on WhatsApp
               </span>
-              <div className="w-7 h-7 rounded-full bg-brand-navy/5 text-brand-navy flex items-center justify-center shrink-0 group-hover:bg-brand-navy group-hover:text-brand-white transition-all duration-300">
-                <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.2] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <div className="w-7 h-7 rounded-full bg-brand-navy/5 text-brand-navy flex items-center justify-center shrink-0 group-hover:bg-brand-navy group-hover:text-brand-white group-active:bg-brand-navy group-active:text-brand-white transition-all duration-300">
+                <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.2] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-active:translate-x-0.5 group-active:-translate-y-0.5 transition-transform" />
               </div>
             </div>
           </a>

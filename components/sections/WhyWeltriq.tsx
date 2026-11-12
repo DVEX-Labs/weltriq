@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -38,6 +38,7 @@ const values = [
 
 export function WhyWeltriq() {
   const { openModal } = useInspectionModal();
+  const [activeValue, setActiveValue] = useState<string>("01");
 
   return (
     <Section className="bg-white text-brand-navy border-b border-brand-navy/10 overflow-hidden">
@@ -74,35 +75,69 @@ export function WhyWeltriq() {
               </div>
             </div>
 
-            {/* RIGHT — Values list (Span 7) */}
+            {/* RIGHT — Values list (Span 7) — Responsive Touch & Hover Feedback */}
             <div className="lg:col-span-7 w-full flex flex-col divide-y divide-brand-navy/10 border-y border-brand-navy/10">
-              {values.map((value) => (
-                <div
-                  key={value.title}
-                  className="group py-3.5 sm:py-4 px-3 sm:px-4 rounded-xl hover:bg-brand-navy/[0.03] transition-all duration-300 ease-out"
-                >
-                  <div className="flex items-start gap-4">
-                    {/* Proportional Display Number */}
-                    <span className="font-display font-bold text-lg sm:text-xl text-brand-navy/35 shrink-0 w-7 sm:w-8 pt-0.5 leading-none group-hover:text-brand-navy transition-colors">
-                      {value.number}
-                    </span>
+              {values.map((value) => {
+                const isActive = activeValue === value.number;
 
-                    {/* Value Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <h3 className="text-sm sm:text-base font-display font-bold uppercase text-brand-navy tracking-wide group-hover:text-brand-navy transition-colors duration-300">
-                          {value.title}
-                        </h3>
-                        <ArrowRight className="w-3.5 h-3.5 text-brand-navy/30 group-hover:text-brand-navy group-hover:translate-x-1 transition-all duration-300 shrink-0 hidden sm:block" />
+                return (
+                  <div
+                    key={value.title}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={isActive}
+                    onClick={() => setActiveValue(value.number)}
+                    onTouchStart={() => setActiveValue(value.number)}
+                    onMouseEnter={() => setActiveValue(value.number)}
+                    className={`group py-3.5 sm:py-4 px-3 sm:px-4 rounded-xl transition-all duration-300 ease-out cursor-pointer select-none touch-manipulation focus:outline-none ${
+                      isActive
+                        ? "bg-brand-navy/[0.05] shadow-2xs"
+                        : "hover:bg-brand-navy/[0.03] active:bg-brand-navy/[0.04]"
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      {/* Proportional Display Number */}
+                      <span
+                        className={`font-display font-bold text-lg sm:text-xl shrink-0 w-7 sm:w-8 pt-0.5 leading-none transition-all duration-300 ${
+                          isActive
+                            ? "text-brand-navy scale-105"
+                            : "text-brand-navy/35 group-hover:text-brand-navy"
+                        }`}
+                      >
+                        {value.number}
+                      </span>
+
+                      {/* Value Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <h3
+                            className={`text-sm sm:text-base font-display font-bold uppercase tracking-wide transition-colors duration-300 ${
+                              isActive ? "text-brand-navy font-bold" : "text-brand-navy group-hover:text-brand-navy"
+                            }`}
+                          >
+                            {value.title}
+                          </h3>
+                          <ArrowRight
+                            className={`w-3.5 h-3.5 transition-all duration-300 shrink-0 hidden sm:block ${
+                              isActive
+                                ? "text-brand-navy translate-x-1 opacity-100"
+                                : "text-brand-navy/30 group-hover:text-brand-navy group-hover:translate-x-1"
+                            }`}
+                          />
+                        </div>
+
+                        <p
+                          className={`text-xs sm:text-sm font-sans font-normal leading-relaxed mt-0.5 transition-colors duration-300 ${
+                            isActive ? "text-brand-navy/85" : "text-brand-navy/65"
+                          }`}
+                        >
+                          {value.description}
+                        </p>
                       </div>
-
-                      <p className="text-xs sm:text-sm font-sans font-normal text-brand-navy/65 leading-relaxed mt-0.5">
-                        {value.description}
-                      </p>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
           </div>

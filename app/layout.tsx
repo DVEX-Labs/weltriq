@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { WeltriqLoader } from "@/components/ui/WeltriqLoader";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { InspectionModalProvider } from "@/components/providers/InspectionModalProvider";
+import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 
 const bakbakOne = localFont({
   src: "./fonts/Bakbak_One/BakbakOne-Regular.ttf",
@@ -119,7 +120,7 @@ const localBusinessSchema = {
   "logo": "https://weltriq.in/images/logo/weltriq-icon.png",
   "@id": "https://weltriq.in",
   "url": "https://weltriq.in",
-  "telephone": "+919747506015",
+  "telephone": ["+919747506015", "+918136983928"],
   "email": "info@weltriq.in",
   "priceRange": "₹₹",
   "address": {
@@ -174,6 +175,7 @@ export default function RootLayout({
               {children}
             </div>
             <Footer />
+            <WhatsAppButton />
           </InspectionModalProvider>
         </SmoothScrollProvider>
       </body>

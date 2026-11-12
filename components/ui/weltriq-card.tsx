@@ -81,28 +81,28 @@ export const WeltriqCard = React.forwardRef<HTMLDivElement, WeltriqCardProps>(
       <div
         ref={ref}
         className={cn(
-          "group relative bg-neutral-50/90 rounded-xl border border-brand-navy/8 flex flex-col justify-between p-6 sm:p-7 md:p-8 h-full overflow-hidden shadow-sm",
+          "group relative bg-neutral-50/90 rounded-xl border border-brand-navy/8 flex flex-col justify-between p-6 sm:p-7 md:p-8 h-full overflow-hidden shadow-sm touch-manipulation cursor-pointer select-none",
           hoverLift &&
-            "transform-gpu hover:-translate-y-1.5 hover:shadow-md transition-all duration-300 ease-out motion-reduce:transition-none motion-reduce:hover:transform-none",
+            "transform-gpu hover:-translate-y-1.5 hover:shadow-md active:-translate-y-0.5 active:scale-[0.985] active:shadow-md active:border-brand-navy/25 transition-all duration-300 ease-out motion-reduce:transition-none motion-reduce:hover:transform-none",
           props.tabIndex !== undefined &&
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-yellow focus-visible:ring-offset-2",
           className
         )}
         {...props}
       >
-        {/* Top Accent Line on Hover (only if explicitly enabled) */}
+        {/* Top Accent Line on Hover & Touch Active */}
         {showAccentLine && (
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-brand-navy opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-brand-navy opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-300 ease-out pointer-events-none" />
         )}
 
-        {/* Background Watermark Number: Visible on mobile/tablet, reveals on hover on desktop */}
+        {/* Background Watermark Number: Visible on mobile/tablet, reveals on hover & touch on desktop */}
         {watermarkNumber && (
           <div
             aria-hidden="true"
             className={cn(
               "absolute right-3 -bottom-2 sm:right-4 sm:-bottom-3 text-7xl sm:text-8xl md:text-8xl font-display font-black tracking-tighter leading-none select-none pointer-events-none z-0",
-              "text-brand-navy/[0.08] lg:text-brand-navy/[0.06] lg:group-hover:text-brand-navy/[0.12]",
-              "opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 ease-out",
+              "text-brand-navy/[0.08] lg:text-brand-navy/[0.06] lg:group-hover:text-brand-navy/[0.12] lg:group-active:text-brand-navy/[0.12]",
+              "opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:group-active:opacity-100 transition-all duration-300 ease-out",
               watermarkClassName
             )}
           >
@@ -122,9 +122,9 @@ export const WeltriqCard = React.forwardRef<HTMLDivElement, WeltriqCardProps>(
                 <span />
               )}
               {(Icon || iconElement) && (
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-brand-white text-brand-navy border border-brand-navy/6 shadow-xs transition-colors duration-300 ease-out">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-brand-white text-brand-navy border border-brand-navy/6 shadow-xs group-hover:bg-brand-navy group-hover:text-white group-active:bg-brand-navy group-active:text-white group-hover:scale-105 group-active:scale-105 transition-all duration-300 ease-out">
                   {Icon ? (
-                    <Icon className="h-5 w-5 stroke-[2] text-brand-navy transition-colors duration-300 ease-out" aria-hidden="true" />
+                    <Icon className="h-5 w-5 stroke-[2] transition-colors duration-300 ease-out" aria-hidden="true" />
                   ) : (
                     iconElement
                   )}
@@ -223,7 +223,7 @@ export const WeltriqCard = React.forwardRef<HTMLDivElement, WeltriqCardProps>(
             {showArrow && (
               <ArrowRight
                 className={cn(
-                  "w-4 h-4 text-brand-navy group-hover:translate-x-1 transition-transform duration-300 ease-out motion-reduce:transform-none shrink-0",
+                  "w-4 h-4 text-brand-navy group-hover:translate-x-1 group-active:translate-x-1 transition-transform duration-300 ease-out motion-reduce:transform-none shrink-0",
                   arrowClassName
                 )}
                 aria-hidden="true"

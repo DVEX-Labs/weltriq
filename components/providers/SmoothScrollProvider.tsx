@@ -95,6 +95,10 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     gsap.ticker.add(updateTicker);
     gsap.ticker.lagSmoothing(0); // Prevents sudden jumps when switching browser tabs
 
+    // Enable Mobile Safari / iOS :active and touch-hover feedback across the entire site
+    const enableTouchActive = () => {};
+    window.addEventListener("touchstart", enableTouchActive, { passive: true });
+
     // 4. Initial refresh after layout calculation
     const timeout = setTimeout(() => {
       ScrollTrigger.refresh();
@@ -102,6 +106,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
 
     return () => {
       clearTimeout(timeout);
+      window.removeEventListener("touchstart", enableTouchActive);
       gsap.ticker.remove(updateTicker);
       instance.destroy();
       activeLenis = null;

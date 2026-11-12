@@ -108,7 +108,7 @@ export function HomeHeroScroll() {
                   Trusted Roofing
                 </span>
               </span>
-              <span className="block overflow-hidden py-1">
+              <span className="block overflow-hidden pt-1 pb-2 sm:pb-3">
                 <span
                   className={`block transition-all duration-700 delay-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                     readyToAnimate
@@ -116,7 +116,34 @@ export function HomeHeroScroll() {
                       : "translate-y-[115%] opacity-0"
                   }`}
                 >
-                  Solutions Partner
+                  Solutions{" "}
+                  <span className="relative inline-block whitespace-nowrap">
+                    Partner
+                    {/* Refined Bold Calligraphic Ribbon Underline — Proportional to Bakbak One font weight */}
+                    <svg
+                      viewBox="0 0 260 22"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      preserveAspectRatio="none"
+                      className="absolute -bottom-1.5 sm:-bottom-2 md:-bottom-2.5 left-0 w-full h-[12px] sm:h-[15px] md:h-[18px] pointer-events-none drop-shadow-[0_3px_10px_rgba(255,198,39,0.55)] overflow-visible"
+                      aria-hidden="true"
+                    >
+                      <defs>
+                        <linearGradient id="hero-swoosh-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#FFE066" />
+                          <stop offset="40%" stopColor="#FFC627" />
+                          <stop offset="100%" stopColor="#FFA500" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        d="M 3 13 C 55 18, 155 19, 256 6 C 258 5.5, 259 7, 257 8 C 170 21, 60 20, 1 14.5 C -0.5 14, 0.5 12.8, 3 13 Z"
+                        fill="url(#hero-swoosh-gradient)"
+                        className={`transition-all duration-700 delay-500 ease-out origin-left ${
+                          readyToAnimate ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
+                        }`}
+                      />
+                    </svg>
+                  </span>
                 </span>
               </span>
             </h1>

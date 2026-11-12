@@ -106,3 +106,24 @@ body {
   will-change: transform, opacity;
 }
 
+/* WhatsApp Subtle Breathing Animation */
+@keyframes whatsappBreathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 3px 12px rgba(37, 211, 102, 0.35);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 5px 16px rgba(37, 211, 102, 0.5);
+  }
+}
+
+.animate-whatsapp-breathe {
+  animation: whatsappBreathe 2.4s ease-in-out infinite;
+  will-change: transform, box-shadow;
+}
+
+.animate-whatsapp-breathe:hover {
+  animation-play-state: paused;
+}
+

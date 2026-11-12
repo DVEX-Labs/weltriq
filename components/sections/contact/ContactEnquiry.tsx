@@ -47,7 +47,7 @@ export function ContactEnquiry() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.district || !formData.requirement) {
+    if (!formData.name || !formData.phone) {
       return;
     }
     setIsSubmitting(true);
@@ -203,7 +203,6 @@ export function ContactEnquiry() {
                     icon={Mail}
                     name="email"
                     type="email"
-                    required
                     placeholder="Enter your email address"
                     value={formData.email}
                     onChange={handleChange}
@@ -218,7 +217,6 @@ export function ContactEnquiry() {
                       value={formData.district}
                       placeholder="Select District"
                       options={KERALA_DISTRICTS}
-                      required
                       onChange={(val) => setFormData((prev) => ({ ...prev, district: val }))}
                     />
 
@@ -229,7 +227,6 @@ export function ContactEnquiry() {
                       value={formData.requirement}
                       placeholder="Select Roofing Requirement"
                       options={ROOFING_SERVICES}
-                      required
                       onChange={(val) => setFormData((prev) => ({ ...prev, requirement: val }))}
                     />
                   </div>
@@ -239,7 +236,6 @@ export function ContactEnquiry() {
                     label="Location Details & Project Description"
                     icon={FileText}
                     name="message"
-                    required
                     rows={3}
                     placeholder="Enter location/landmark and describe your roofing requirements..."
                     value={formData.message}

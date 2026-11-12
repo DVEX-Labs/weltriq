@@ -8,7 +8,7 @@ export function Footer() {
     <footer className="bg-brand-navy text-brand-white border-t border-brand-white/10">
       <Container className="py-14 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12 pb-12 border-b border-brand-white/10">
-          
+
           {/* Brand Column */}
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="inline-block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-yellow rounded-xl">
@@ -109,18 +109,13 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href={`mailto:${contactInfo.email}`} className="hover:text-brand-white transition-colors">
-                  {contactInfo.email}
+                <a href={`tel:${contactInfo.phoneSecondary.replace(/\s+/g, '')}`} className="hover:text-brand-white transition-colors">
+                  {contactInfo.phoneSecondary}
                 </a>
               </li>
               <li>
-                <a 
-                  href="https://wa.me/919747506015" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-brand-white transition-colors"
-                >
-                  WhatsApp Chat
+                <a href={`mailto:${contactInfo.email}`} className="hover:text-brand-white transition-colors">
+                  {contactInfo.email}
                 </a>
               </li>
             </ul>
