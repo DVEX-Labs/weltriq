@@ -12,13 +12,15 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="inline-block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-yellow rounded-xl">
-              <Image
-                src="/images/logo/weltriq-logo-white.png"
-                alt="WELTRIQ - Professional Roofing Solutions"
-                width={210}
-                height={58}
-                className="h-10 sm:h-12 w-auto object-contain group-hover:opacity-90 transition-opacity"
-              />
+              <div className="bg-brand-white px-3.5 py-2 rounded-md inline-block shadow-sm group-hover:bg-white/95 transition-colors">
+                <Image
+                  src="/logo/weltriq-logo.svg"
+                  alt="WELTRIQ - Professional Roofing Solutions"
+                  width={220}
+                  height={54}
+                  className="h-10 sm:h-12 w-auto object-contain"
+                />
+              </div>
             </Link>
 
             <p className="text-sm text-brand-white/60 max-w-sm leading-relaxed font-sans">
@@ -101,7 +103,7 @@ export function Footer() {
             </span>
             <ul className="space-y-2 text-sm text-brand-white/65 font-sans">
               <li className="text-brand-white/50 leading-relaxed">
-                {contactInfo.address}, Kerala
+                {contactInfo.address}
               </li>
               <li>
                 <a href={`tel:${contactInfo.phone.replace(/\s+/g, '')}`} className="hover:text-brand-white transition-colors">

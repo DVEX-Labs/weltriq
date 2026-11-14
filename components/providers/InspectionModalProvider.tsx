@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useLenis } from "./SmoothScrollProvider";
 import { X, CheckCircle2, Phone, MapPin, User, Clock, ShieldCheck, ArrowRight, Loader2, Wrench } from "lucide-react";
 import { FormInput, FormSelect, FormTextarea, KERALA_DISTRICTS, ROOFING_SERVICES } from "@/components/ui/FormField";
+import { contactInfo } from "@/data/contact";
 
 interface InspectionModalContextType {
   isOpen: boolean;
@@ -26,7 +27,8 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  
+  const [whatsappUrl, setWhatsappUrl] = useState("");
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -40,6 +42,7 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
   const openModal = useCallback((defaultService?: string) => {
     setIsSuccess(false);
     setIsSubmitting(false);
+    setWhatsappUrl("");
     setFormData((prev) => ({
       ...prev,
       service: defaultService || prev.service || "",
@@ -92,30 +95,49 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone) {
       return;
     }
     setIsSubmitting(true);
 
-    // Save lead to local storage for safety/testing
+    const waMessage = `*Free Site Inspection Request - WELTRIQ*
+• *Name:* ${formData.name}
+• *Phone:* ${formData.phone}
+${formData.district ? `• *District:* ${formData.district}` : ""}
+${formData.service ? `• *Service:* ${formData.service}` : ""}
+${formData.notes ? `• *Notes:* ${formData.notes}` : ""}`;
+
+    const targetPhone = contactInfo.whatsappNumber || "918136983928";
+    const waLink = `https://wa.me/${targetPhone}?text=${encodeURIComponent(waMessage)}`;
+    setWhatsappUrl(waLink);
+
+    // 1. Silent Safety Backup: Save lead to Admin Database
     try {
-      const stored = localStorage.getItem("weltriq_leads");
-      const leads = stored ? JSON.parse(stored) : [];
-      leads.push({
-        ...formData,
-        date: new Date().toISOString(),
+      await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          district: formData.district,
+          service: formData.service,
+          message: formData.notes,
+          source: "Inspection Modal",
+        }),
       });
-      localStorage.setItem("weltriq_leads", JSON.stringify(leads));
-    } catch {
-      // Ignore local storage error
+    } catch (err) {
+      console.warn("Silent backup lead error:", err);
     }
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-    }, 700);
+    // 2. Immediate WhatsApp Launch
+    try {
+      window.open(waLink, "_blank");
+    } catch { }
+
+    setIsSubmitting(false);
+    setIsSuccess(true);
   };
 
   return (
@@ -126,57 +148,71 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
       {isOpen && (
         <div
           data-lenis-prevent="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 overflow-y-auto animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
         >
           {/* Backdrop Blur */}
           <div
-            className="fixed inset-0 bg-[#0B1526]/85 backdrop-blur-md transition-opacity"
+            className="fixed inset-0 bg-[#0B1526]/80 backdrop-blur-md transition-opacity"
             onClick={closeModal}
             aria-hidden="true"
           />
 
-          {/* Modal Card */}
+          {/* Modal Card - Fully responsive across small phones, tablets, and large displays */}
           <div
             data-lenis-prevent="true"
-            className="relative w-full max-w-lg bg-white border border-slate-200/90 rounded-2xl shadow-2xl overflow-hidden text-brand-navy z-10 animate-in zoom-in-95 duration-200"
+            className="relative w-full max-w-lg sm:max-w-xl bg-white border border-slate-200/90 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden text-brand-navy z-10 my-auto max-h-[calc(100dvh-1.5rem)] sm:max-h-[min(90dvh,840px)] flex flex-col animate-in zoom-in-95 duration-200"
           >
-            {/* Close Button */}
+            {/* Top Brand Accent Gradient Bar */}
+            <div className="h-1 w-full bg-gradient-to-r from-brand-yellow via-amber-400 to-brand-navy shrink-0" />
+
+            {/* Close Button - Large touch target with comfortable padding */}
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-brand-navy hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+              className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-20 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-slate-400 hover:text-brand-navy bg-slate-100/70 hover:bg-slate-200/90 rounded-full transition-colors cursor-pointer"
               aria-label="Close dialog"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
             </button>
 
-            <div className="p-6 sm:p-8">
+            {/* Scrollable Modal Content Body */}
+            <div className="overflow-y-auto overscroll-contain flex-1 p-5 sm:p-7 md:p-8">
               {isSuccess ? (
                 /* SUCCESS STATE */
-                <div className="py-6 flex flex-col items-center text-center space-y-5 animate-in fade-in duration-300">
-                  <div className="w-16 h-16 rounded-full bg-brand-navy/5 border border-brand-navy/15 flex items-center justify-center text-brand-navy">
-                    <CheckCircle2 className="w-10 h-10 stroke-[2.2]" />
+                <div className="py-4 sm:py-6 flex flex-col items-center text-center space-y-4 sm:space-y-5 animate-in fade-in duration-300">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-brand-navy/5 border border-brand-navy/15 flex items-center justify-center text-brand-navy">
+                    <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 stroke-[2.2]" />
                   </div>
 
-                  <div className="space-y-2">
-                    <span className="text-xs font-sans uppercase tracking-widest text-brand-navy/60 font-semibold">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <span className="text-[11px] sm:text-xs font-sans uppercase tracking-widest text-brand-navy/60 font-semibold">
                       Booking Confirmed
                     </span>
-                    <h3 id="modal-title" className="text-2xl sm:text-3xl font-display uppercase text-brand-navy">
+                    <h3 id="modal-title" className="text-xl sm:text-2xl md:text-3xl font-display uppercase text-brand-navy">
                       Request Received!
                     </h3>
-                    <p className="text-sm text-slate-600 max-w-sm mx-auto font-sans leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto font-sans leading-relaxed">
                       Thank you, <span className="font-semibold text-brand-navy">{formData.name || "valued client"}</span>! Our technical site coordinator will call you at{" "}
                       <span className="font-semibold text-brand-navy">{formData.phone}</span> within 24 hours to schedule the on-site inspection.
                     </p>
                   </div>
 
-                  <div className="w-full pt-4">
+                  <div className="w-full pt-3 sm:pt-4 flex flex-col gap-2.5">
+                    {whatsappUrl && (
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full h-11 sm:h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-display uppercase tracking-wider text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md active:scale-[0.99]"
+                      >
+                        <span>Open WhatsApp Chat Directly</span>
+                      </a>
+                    )}
                     <button
                       type="button"
-                      className="w-full h-12 bg-brand-navy text-brand-white hover:bg-brand-navy/90 rounded-lg font-display uppercase tracking-wider text-sm transition-all cursor-pointer"
+                      className="w-full h-10 sm:h-11 bg-brand-navy/10 hover:bg-brand-navy/15 text-brand-navy rounded-xl font-display uppercase tracking-wider text-xs font-bold transition-all cursor-pointer active:scale-[0.99]"
                       onClick={closeModal}
                     >
                       Done
@@ -187,16 +223,16 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
                 /* FORM STATE */
                 <div>
                   {/* Header */}
-                  <div className="mb-6 space-y-2">
+                  <div className="mb-4 sm:mb-6 space-y-1.5 sm:space-y-2 pr-7 sm:pr-8">
                     <Image
-                      src="/images/logo/weltriq-logo.png"
+                      src="/logo/weltriq-logo.svg"
                       alt="WELTRIQ - Professional Roofing Solutions"
-                      width={160}
-                      height={44}
-                      className="h-8 sm:h-9 w-auto object-contain mb-2"
+                      width={190}
+                      height={48}
+                      className="h-8 sm:h-9.5 w-auto object-contain mb-1.5"
                     />
-                    <h2 id="modal-title" className="text-2xl sm:text-3xl font-display uppercase text-brand-navy tracking-wide">
-                      Book Site Inspection
+                    <h2 id="modal-title" className="text-xl sm:text-2xl md:text-3xl font-display uppercase text-brand-navy tracking-tight leading-[1.15]">
+                      Book free site inspection.
                     </h2>
 
                     <p className="text-xs sm:text-sm text-brand-navy/70 font-sans leading-relaxed">
@@ -205,7 +241,7 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
                   </div>
 
                   {/* Form */}
-                  <form onSubmit={handleSubmit} className="space-y-4 font-[system-ui,sans-serif]">
+                  <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4 font-[system-ui,sans-serif]">
                     {/* Full Name */}
                     <FormInput
                       label="Full Name"
@@ -230,7 +266,7 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
                     />
 
                     {/* District & Service Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                       <FormSelect
                         label="District (Kerala)"
                         icon={MapPin}
@@ -257,18 +293,18 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
                       label="Location Details & Project Description"
                       icon={MapPin}
                       name="notes"
-                      rows={3}
+                      rows={2}
                       value={formData.notes}
                       onChange={handleChange}
                       placeholder="Enter location/landmark (e.g. Near Lulu Mall, Edappally) and describe your roofing requirements..."
                     />
 
                     {/* Submit Button */}
-                    <div className="pt-2">
+                    <div className="pt-1.5 sm:pt-2">
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full h-12 bg-brand-navy text-brand-white hover:bg-brand-navy/90 hover:shadow-lg font-display uppercase tracking-wider text-sm rounded-lg border border-brand-navy shadow-md active:translate-y-0 hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                        className="w-full h-11 sm:h-12 bg-brand-navy text-brand-white hover:bg-[#14204A] hover:shadow-lg font-display uppercase tracking-wider text-xs sm:text-sm font-bold rounded-xl border border-brand-navy shadow-md active:scale-[0.99] hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
                       >
                         {isSubmitting ? (
                           <>
@@ -285,14 +321,14 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
                     </div>
 
                     {/* Bottom Badges */}
-                    <div className="flex items-center justify-center gap-4 pt-1 text-[11px] text-brand-navy/70 font-sans font-medium">
+                    <div className="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-3.5 pt-1 text-[10px] sm:text-[11px] text-brand-navy/70 font-sans font-medium text-center">
                       <span className="flex items-center gap-1">
-                        <ShieldCheck className="w-3.5 h-3.5 text-brand-navy" />
-                        100% Free & No Obligation
+                        <ShieldCheck className="w-3.5 h-3.5 text-brand-navy shrink-0" />
+                        100% Free &amp; No Obligation
                       </span>
-                      <span>•</span>
+                      <span className="hidden sm:inline text-brand-navy/30">•</span>
                       <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-brand-navy" />
+                        <Clock className="w-3.5 h-3.5 text-brand-navy shrink-0" />
                         Guaranteed 24-Hr Visit
                       </span>
                     </div>

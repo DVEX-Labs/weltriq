@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { WeltriqLoader } from "@/components/ui/WeltriqLoader";
+import { PublicSiteChrome } from "@/components/layout/PublicSiteChrome";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { InspectionModalProvider } from "@/components/providers/InspectionModalProvider";
-import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 
 const bakbakOne = localFont({
   src: "./fonts/Bakbak_One/BakbakOne-Regular.ttf",
@@ -69,7 +66,7 @@ export const metadata: Metadata = {
     icon: [
       { url: "/favicon.ico" },
       { url: "/icon.png", sizes: "512x512", type: "image/png" },
-      { url: "/images/logo/weltriq-icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/images/logo/weltriq-logo.png", sizes: "512x512", type: "image/png" },
     ],
     apple: [
       { url: "/apple-icon.png", sizes: "512x512", type: "image/png" },
@@ -117,11 +114,11 @@ const localBusinessSchema = {
   "@type": "RoofingContractor",
   "name": "WELTRIQ Roofing Solutions",
   "image": "https://weltriq.in/images/logo/weltriq-logo.png",
-  "logo": "https://weltriq.in/images/logo/weltriq-icon.png",
+  "logo": "https://weltriq.in/logo/weltriq-logo.svg",
   "@id": "https://weltriq.in",
   "url": "https://weltriq.in",
-  "telephone": ["+919747506015", "+918136983928"],
-  "email": "info@weltriq.in",
+  "telephone": ["+918136983928", "+919747506015"],
+  "email": "weltriq@gmail.com",
   "priceRange": "₹₹",
   "address": {
     "@type": "PostalAddress",
@@ -167,15 +164,11 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col font-sans overflow-x-clip" suppressHydrationWarning>
-        <WeltriqLoader />
         <SmoothScrollProvider>
           <InspectionModalProvider>
-            <Navbar />
-            <div className="flex-1">
+            <PublicSiteChrome>
               {children}
-            </div>
-            <Footer />
-            <WhatsAppButton />
+            </PublicSiteChrome>
           </InspectionModalProvider>
         </SmoothScrollProvider>
       </body>

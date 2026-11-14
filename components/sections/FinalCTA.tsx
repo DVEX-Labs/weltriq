@@ -56,7 +56,7 @@ export function FinalCTA() {
               className="group cursor-pointer bg-brand-navy text-brand-white border border-brand-navy hover:bg-brand-yellow hover:text-brand-navy hover:border-brand-yellow shadow-md hover:shadow-lg hover:-translate-y-0.5"
               asChild
             >
-              <Link href="tel:+919747506015" className="flex items-center justify-center gap-2">
+              <Link href="tel:+918136983928" className="flex items-center justify-center gap-2">
                 <Phone className="w-4 h-4 transition-colors group-hover:text-brand-navy" />
                 <span>Call Us Now</span>
               </Link>

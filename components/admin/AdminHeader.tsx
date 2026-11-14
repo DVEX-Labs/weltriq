@@ -31,14 +31,16 @@ export function AdminHeader() {
         {/* Left: Brand & Admin Tag */}
         <div className="flex items-center gap-4">
           <Link href="/admin/blogs" className="flex items-center gap-3">
-            <Image
-              src="/images/logo/weltriq-logo-white.png"
-              alt="WELTRIQ - Professional Roofing Solutions"
-              width={160}
-              height={44}
-              priority
-              className="h-8 sm:h-9 w-auto object-contain"
-            />
+            <div className="bg-brand-white px-2.5 py-1.5 rounded-lg">
+              <Image
+                src="/logo/weltriq-logo.svg"
+                alt="WELTRIQ - Professional Roofing Solutions"
+                width={180}
+                height={45}
+                priority
+                className="h-8 sm:h-9 w-auto object-contain"
+              />
+            </div>
             <span className="text-[10px] font-display uppercase tracking-widest font-bold bg-brand-yellow/20 text-brand-yellow px-2 py-0.5 rounded border border-brand-yellow/30">
               Admin
             </span>

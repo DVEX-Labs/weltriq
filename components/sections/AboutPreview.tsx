@@ -38,9 +38,9 @@ export function AboutPreview() {
     <Section className="bg-brand-white border-y border-brand-navy/5 overflow-hidden">
       <Container>
         <div className="flex flex-col gap-10 md:gap-14">
-          {/* Header Block — Direct & Authoritative with Top-Right CTA */}
+          {/* Header Block — Direct & Authoritative with Top-Right CTA on Desktop, Centered CTA on Mobile */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 border-b border-brand-navy/10">
-            <div className="space-y-3 max-w-2xl">
+            <div className="space-y-3 max-w-2xl text-left">
               <span className="text-xs md:text-sm font-display uppercase tracking-widest font-bold text-brand-navy/70 bg-brand-navy/5 px-4 py-1.5 rounded-full border border-brand-navy/10 inline-block">
                 About WELTRIQ
               </span>
@@ -49,7 +49,7 @@ export function AboutPreview() {
               </h2>
             </div>
 
-            <div className="shrink-0">
+            <div className="w-full sm:w-auto flex justify-center sm:justify-end shrink-0">
               <Button
                 variant="primary"
                 size="lg"

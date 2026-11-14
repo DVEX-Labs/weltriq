@@ -6,27 +6,17 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
-  CheckCircle,
-  Clock,
-  Eye,
-  FileText,
-  Heading2,
-  Heading3,
-  Link as LinkIcon,
-  List,
-  ListOrdered,
-  Quote,
-  Save,
   Send,
   UploadCloud,
-  Bold,
-  Italic,
+  Sparkles,
+  ImageIcon,
+  X,
+  Plus,
+  Check,
 } from "lucide-react";
-import { BlogArticle, BlogStatus } from "@/lib/blog/types";
+import { BlogArticle } from "@/lib/blog/types";
 import { BLOG_CATEGORIES, generateSlug } from "@/lib/blog/config";
 import { Button } from "@/components/ui/Button";
-import { Input, Textarea } from "@/components/ui/Input";
-import { BlogArticleBody } from "@/components/blog/BlogArticleBody";
 
 interface AdminBlogFormProps {
   initialData?: BlogArticle;
@@ -36,39 +26,48 @@ interface AdminBlogFormProps {
 export function AdminBlogForm({ initialData, isEditing = false }: AdminBlogFormProps) {
   const router = useRouter();
 
-  const [title, setTitle] = useState(initialData?.title || "");
-  const [slug, setSlug] = useState(initialData?.slug || "");
-  const [slugEdited, setSlugEdited] = useState(Boolean(initialData?.slug));
-  const [excerpt, setExcerpt] = useState(initialData?.excerpt || "");
-  const [category, setCategory] = useState(initialData?.category || BLOG_CATEGORIES[0]);
-  const [coverImage, setCoverImage] = useState(initialData?.coverImage || "");
-  const [coverImageAlt, setCoverImageAlt] = useState(initialData?.coverImageAlt || "");
-  const [content, setContent] = useState(initialData?.content || "");
-  const [authorName, setAuthorName] = useState(initialData?.author?.name || "WELTRIQ Technical Team");
-  const [authorRole, setAuthorRole] = useState(initialData?.author?.role || "Roofing Specialist");
-  const [seoTitle, setSeoTitle] = useState(initialData?.seoTitle || "");
-  const [seoDescription, setSeoDescription] = useState(initialData?.seoDescription || "");
-  const [status, setStatus] = useState<BlogStatus>(initialData?.status || "draft");
+  // Categories list (defaults + any existing category from initialData)
+  const initialCategories = Array.from(
+    new Set([
+      ...BLOG_CATEGORIES,
+      ...(initialData?.category ? [initialData.category] : []),
+    ])
+  );
 
-  const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
+  // Core Simple Fields
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [category, setCategory] = useState(initialData?.category || BLOG_CATEGORIES[0]);
+  const [categoriesList, setCategoriesList] = useState<string[]>(initialCategories);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [categoryAddedNotice, setCategoryAddedNotice] = useState(false);
+
+  const [coverImage, setCoverImage] = useState(initialData?.coverImage || "");
+  const [content, setContent] = useState(initialData?.content || "");
+
+  // UI state
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Auto-generate slug from title unless manually edited
   const handleTitleChange = (val: string) => {
     setTitle(val);
-    if (!slugEdited) {
-      setSlug(generateSlug(val));
+  };
+
+  // Add new category handler
+  const handleAddCategory = () => {
+    const trimmed = newCategoryName.trim();
+    if (!trimmed) return;
+
+    if (!categoriesList.includes(trimmed)) {
+      setCategoriesList((prev) => [...prev, trimmed]);
     }
+    setCategory(trimmed);
+    setNewCategoryName("");
+    setCategoryAddedNotice(true);
+    setTimeout(() => setCategoryAddedNotice(false), 2500);
   };
 
-  const handleSlugChange = (val: string) => {
-    setSlugEdited(true);
-    setSlug(generateSlug(val));
-  };
-
-  // Image upload handler
+  // Image file upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -87,73 +86,63 @@ export function AdminBlogForm({ initialData, isEditing = false }: AdminBlogFormP
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Failed to upload image.");
+        setError(data.error || "Image upload failed.");
       } else {
         setCoverImage(data.url);
       }
-    } catch (err) {
-      setError("Error uploading image.");
+    } catch {
+      setError("Network error while uploading image.");
     } finally {
       setUploadingImage(false);
     }
   };
 
-  // Toolbar markdown helper
-  const insertMarkdown = (prefix: string, suffix: string = "") => {
-    const textarea = document.getElementById("article-content-input") as HTMLTextAreaElement;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = content.substring(start, end);
-
-    const replacement = `${prefix}${selected || "text"}${suffix}`;
-    const newContent = content.substring(0, start) + replacement + content.substring(end);
-    setContent(newContent);
-
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + prefix.length, start + prefix.length + (selected ? selected.length : 4));
-    }, 50);
-  };
-
-  // Submit Handler
-  const handleSubmit = async (targetStatus?: BlogStatus) => {
+  // Submit Handler - Every article saved is automatically live on site
+  const handleSave = async () => {
     setError(null);
-    const finalStatus = targetStatus || status;
 
     if (!title.trim()) {
-      setError("Please provide an article title.");
+      setError("Please write an article title before saving.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-    if (!excerpt.trim()) {
-      setError("Please provide a short excerpt.");
-      return;
-    }
+
     if (!content.trim()) {
-      setError("Article content cannot be empty.");
+      setError("Please write the article description/content.");
+      window.scrollTo({ top: 300, behavior: "smooth" });
       return;
     }
+
+    // Auto-generate clean excerpt from description opening sentences
+    const cleanText = content.replace(/[#*`>_\-[\]]/g, "").trim();
+    const finalExcerpt = cleanText.slice(0, 150) + (cleanText.length > 150 ? "..." : "");
+
     if (!coverImage.trim()) {
-      setError("Please upload or provide a cover image.");
+      setError("Please upload a featured cover photo for this article.");
+      window.scrollTo({ top: 180, behavior: "smooth" });
       return;
     }
+
+    const finalCover = coverImage.trim();
 
     setSaving(true);
 
     const payload = {
       id: initialData?.id,
       title: title.trim(),
-      slug: slug.trim() || generateSlug(title),
-      excerpt: excerpt.trim(),
-      category: category.trim(),
-      coverImage: coverImage.trim(),
-      coverImageAlt: coverImageAlt.trim() || title.trim(),
+      slug: initialData?.slug || generateSlug(title),
+      excerpt: finalExcerpt,
+      category: category.trim() || BLOG_CATEGORIES[0],
+      coverImage: finalCover,
+      coverImageAlt: title.trim(),
       content: content.trim(),
-      author: authorName.trim() ? { name: authorName.trim(), role: authorRole.trim() } : undefined,
-      seoTitle: seoTitle.trim() || title.trim(),
-      seoDescription: seoDescription.trim() || excerpt.trim(),
-      status: finalStatus,
+      author: {
+        name: "WELTRIQ Technical Team",
+        role: "Roofing Specialist",
+      },
+      seoTitle: title.trim(),
+      seoDescription: finalExcerpt,
+      status: "published" as const, // Always published & live on website
     };
 
     try {
@@ -173,429 +162,278 @@ export function AdminBlogForm({ initialData, isEditing = false }: AdminBlogFormP
 
       router.push("/admin/blogs");
       router.refresh();
-    } catch (err) {
-      setError("Network error while saving article.");
+    } catch {
+      setError("Network error while saving. Please check your connection.");
       setSaving(false);
     }
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-12">
-      {/* Top Header & Breadcrumb */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-brand-navy/10">
+    <div className="max-w-4xl mx-auto space-y-6 pb-20 font-sans">
+      {/* Top Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <Link
             href="/admin/blogs"
-            className="p-2 rounded-lg bg-brand-white border border-brand-navy/10 text-brand-navy/60 hover:text-brand-navy hover:bg-brand-island-spice/50 transition-colors"
-            title="Back to Articles"
+            className="p-2.5 rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-brand-navy hover:bg-gray-50 transition-colors shadow-2xs"
+            title="Back to Articles list"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <span className="text-[11px] font-display uppercase tracking-widest text-brand-yellow font-bold block">
-              {isEditing ? "EDIT ARTICLE" : "NEW ARTICLE"}
-            </span>
-            <h1 className="text-xl sm:text-2xl font-display uppercase text-brand-navy tracking-tight truncate max-w-xl">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-display uppercase tracking-widest font-bold text-brand-navy bg-brand-yellow/20 px-2.5 py-0.5 rounded-md border border-gray-200">
+                <Sparkles className="w-3 h-3 text-brand-navy" />
+                {isEditing ? "Edit Article" : "New Article"}
+              </span>
+              <span className="text-[10px] font-display uppercase tracking-wider font-bold px-2 py-0.5 rounded border border-gray-200 bg-emerald-50 text-emerald-800">
+                Live on Website
+              </span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-display uppercase font-bold text-brand-navy tracking-tight truncate max-w-xl">
               {title || "Untitled Article"}
             </h1>
           </div>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={saving}
-            onClick={() => handleSubmit("draft")}
-            className="text-xs uppercase font-display tracking-wider"
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0">
+          <Link
+            href="/admin/blogs"
+            className="px-4 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-600 text-xs font-display uppercase tracking-wider font-bold transition-colors"
           >
-            <Save className="w-3.5 h-3.5 mr-1.5" />
-            <span>Save Draft</span>
-          </Button>
+            Cancel
+          </Link>
 
           <Button
             type="button"
             variant="primary"
             size="sm"
             disabled={saving}
-            onClick={() => handleSubmit("published")}
-            className="text-xs uppercase font-display tracking-wider"
+            onClick={handleSave}
+            className="h-10 px-5 rounded-xl bg-brand-yellow hover:bg-[#F3B81F] text-brand-navy text-xs font-display uppercase tracking-wider font-bold shadow-xs hover:shadow-sm cursor-pointer"
           >
-            <Send className="w-3.5 h-3.5 mr-1.5" />
-            <span>{isEditing && initialData?.status === "published" ? "Update Published" : "Publish Now"}</span>
+            <Send className="w-3.5 h-3.5 mr-1.5 text-brand-navy" />
+            <span>{isEditing ? "Update Article" : "Publish Article Now"}</span>
           </Button>
         </div>
       </div>
 
+      {/* Error Alert Banner */}
       {error && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm font-sans flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm flex items-center justify-between">
           <span>{error}</span>
           <button onClick={() => setError(null)} className="text-red-500 font-bold ml-2">
-            &times;
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      {/* Main Grid: Form Inputs (Left) and Meta Sidebar (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Title, Excerpt, Content (2 Cols) */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Title & Slug */}
-          <div className="bg-brand-white p-5 sm:p-6 rounded-xl border border-brand-navy/10 shadow-xs space-y-4">
-            <div>
-              <label className="block text-xs font-display uppercase tracking-wider font-bold text-brand-navy/80 mb-1.5">
-                Article Title <span className="text-red-500">*</span>
-              </label>
-              <Input
-                type="text"
-                placeholder="e.g. Complete Guide to Metal Roofing in Kerala"
-                value={title}
-                onChange={(e) => handleTitleChange(e.target.value)}
-                className="h-11 font-display font-bold text-sm sm:text-base text-brand-navy bg-brand-island-spice/30"
-              />
-            </div>
+      {/* 1. Article Title & Category Card */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 shadow-xs space-y-5">
+        <div>
+          <label className="block text-xs font-display uppercase tracking-wider font-bold text-brand-navy mb-2">
+            Article Title <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. 5 Signs Your Roof Needs Pre-Monsoon Maintenance in Kerala"
+            value={title}
+            onChange={(e) => handleTitleChange(e.target.value)}
+            className="w-full h-12 px-4 rounded-xl text-base sm:text-lg font-bold text-brand-navy bg-gray-50 border border-gray-200 focus:bg-white focus:border-brand-navy focus:ring-2 focus:ring-brand-yellow/30 outline-none transition-all placeholder:text-gray-400 placeholder:font-normal font-sans"
+            required
+          />
+          <p className="text-xs text-gray-400 mt-1.5 font-sans">
+            Make it clear and helpful for home and commercial building owners.
+          </p>
+        </div>
 
-            <div>
-              <label className="block text-xs font-display uppercase tracking-wider font-bold text-brand-navy/80 mb-1.5">
-                URL Slug
-              </label>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-brand-navy/50 font-mono">/blog/</span>
-                <Input
-                  type="text"
-                  placeholder="complete-guide-to-metal-roofing-kerala"
-                  value={slug}
-                  onChange={(e) => handleSlugChange(e.target.value)}
-                  className="h-9 text-xs font-mono text-brand-navy bg-brand-island-spice/20"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-display uppercase tracking-wider font-bold text-brand-navy/80 mb-1.5">
-                Short Excerpt <span className="text-red-500">*</span>
-              </label>
-              <Textarea
-                placeholder="A concise 1-2 sentence preview for cards and social sharing..."
-                value={excerpt}
-                onChange={(e) => setExcerpt(e.target.value)}
-                rows={3}
-                className="text-xs sm:text-sm font-sans bg-brand-island-spice/30 text-brand-navy"
-              />
-            </div>
+        {/* Category Selection & Add Category */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+          {/* Select Category Dropdown */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-display uppercase tracking-wider font-bold text-gray-700">
+              Category
+            </label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full h-11 px-3.5 rounded-xl text-xs sm:text-sm font-sans font-medium border border-gray-200 bg-gray-50 text-brand-navy focus:outline-none focus:border-brand-navy focus:bg-white focus:ring-2 focus:ring-brand-yellow/30 cursor-pointer"
+            >
+              {categoriesList.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* Article Content Editor & Live Preview */}
-          <div className="bg-brand-white rounded-xl border border-brand-navy/10 shadow-xs overflow-hidden">
-            {/* Editor Tab Bar */}
-            <div className="flex items-center justify-between border-b border-brand-navy/10 px-4 py-2.5 bg-brand-island-spice/40">
-              {/* Tabs */}
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("edit")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-display uppercase tracking-wider font-bold transition-colors ${
-                    activeTab === "edit"
-                      ? "bg-brand-navy text-brand-white"
-                      : "text-brand-navy/70 hover:text-brand-navy hover:bg-brand-navy/5"
-                  }`}
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Write Markdown</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("preview")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-display uppercase tracking-wider font-bold transition-colors ${
-                    activeTab === "preview"
-                      ? "bg-brand-navy text-brand-white"
-                      : "text-brand-navy/70 hover:text-brand-navy hover:bg-brand-navy/5"
-                  }`}
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>Live Preview</span>
-                </button>
-              </div>
-
-              {/* Formatting Toolbar (Active during Edit tab) */}
-              {activeTab === "edit" && (
-                <div className="hidden sm:flex items-center gap-1 border-l border-brand-navy/10 pl-2">
-                  <button
-                    type="button"
-                    onClick={() => insertMarkdown("## ")}
-                    className="p-1.5 text-brand-navy/70 hover:text-brand-navy hover:bg-brand-navy/5 rounded"
-                    title="Heading 2"
-                  >
-                    <Heading2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => insertMarkdown("### ")}
-                    className="p-1.5 text-brand-navy/70 hover:text-brand-navy hover:bg-brand-navy/5 rounded"
-                    title="Heading 3"
-                  >
-                    <Heading3 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => insertMarkdown("**", "**")}
-                    className="p-1.5 text-brand-navy/70 hover:text-brand-navy hover:bg-brand-navy/5 rounded"
-                    title="Bold"
-                  >
-                    <Bold className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => insertMarkdown("*", "*")}
-                    className="p-1.5 text-brand-navy/70 hover:text-brand-navy hover:bg-brand-navy/5 rounded"
-                    title="Italic"
-                  >
-                    <Italic className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => insertMarkdown("- ")}
-                    className="p-1.5 text-brand-navy/70 hover:text-brand-navy hover:bg-brand-navy/5 rounded"
-                    title="Bullet list"
-                  >
-                    <List className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => insertMarkdown("1. ")}
-                    className="p-1.5 text-brand-navy/70 hover:text-brand-navy hover:bg-brand-navy/5 rounded"
-                    title="Numbered list"
-                  >
-                    <ListOrdered className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => insertMarkdown("> ")}
-                    className="p-1.5 text-brand-navy/70 hover:text-brand-navy hover:bg-brand-navy/5 rounded"
-                    title="Quote"
-                  >
-                    <Quote className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => insertMarkdown("[Link text](", ")")}
-                    className="p-1.5 text-brand-navy/70 hover:text-brand-navy hover:bg-brand-navy/5 rounded"
-                    title="Link"
-                  >
-                    <LinkIcon className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+          {/* Add New Category Input */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-display uppercase tracking-wider font-bold text-gray-700">
+                + Add Category
+              </label>
+              {categoryAddedNotice && (
+                <span className="text-[11px] text-emerald-600 font-bold font-sans inline-flex items-center gap-1">
+                  <Check className="w-3 h-3" /> Added &amp; Selected!
+                </span>
               )}
             </div>
-
-            {/* Content Area */}
-            <div className="p-4 sm:p-6">
-              {activeTab === "edit" ? (
-                <textarea
-                  id="article-content-input"
-                  rows={20}
-                  placeholder="Write your article in Markdown... Use ## for section headings, - for lists, and > for quotes."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="w-full font-sans text-sm text-brand-navy bg-transparent outline-none resize-y min-h-[400px] leading-relaxed"
-                />
-              ) : (
-                <div className="min-h-[400px] prose-container">
-                  <BlogArticleBody content={content || "*Nothing written yet. Switch to Edit tab to add content.*"} />
-                </div>
-              )}
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="e.g. Kerala Architecture"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddCategory();
+                  }
+                }}
+                className="flex-1 h-11 px-3.5 rounded-xl text-xs sm:text-sm font-sans bg-gray-50 border border-gray-200 text-brand-navy placeholder:text-gray-400 focus:bg-white focus:border-brand-navy focus:ring-2 focus:ring-brand-yellow/30 outline-none transition-all"
+              />
+              <button
+                type="button"
+                onClick={handleAddCategory}
+                disabled={!newCategoryName.trim()}
+                className="h-11 px-4 rounded-xl bg-brand-navy hover:bg-[#14204A] text-white text-xs font-display uppercase tracking-wider font-bold transition-all disabled:opacity-40 cursor-pointer shrink-0 inline-flex items-center gap-1"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add</span>
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Right Column: Metadata, Cover Image, SEO (1 Col) */}
-        <div className="space-y-6">
-          {/* Status & Category Card */}
-          <div className="bg-brand-white p-5 rounded-xl border border-brand-navy/10 shadow-xs space-y-4">
-            <div>
-              <label className="block text-xs font-display uppercase tracking-wider font-bold text-brand-navy/80 mb-1.5">
-                Publication Status
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setStatus("draft")}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-display uppercase tracking-wider font-bold border transition-colors ${
-                    status === "draft"
-                      ? "bg-amber-50 text-amber-800 border-amber-300 ring-2 ring-amber-400/30"
-                      : "bg-brand-island-spice/30 text-brand-navy/60 border-brand-navy/15 hover:bg-brand-island-spice/60"
-                  }`}
-                >
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>Draft</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStatus("published")}
-                  className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-display uppercase tracking-wider font-bold border transition-colors ${
-                    status === "published"
-                      ? "bg-emerald-50 text-emerald-800 border-emerald-300 ring-2 ring-emerald-400/30"
-                      : "bg-brand-island-spice/30 text-brand-navy/60 border-brand-navy/15 hover:bg-brand-island-spice/60"
-                  }`}
-                >
-                  <CheckCircle className="w-3.5 h-3.5" />
-                  <span>Published</span>
-                </button>
-              </div>
-            </div>
+      {/* 2. Featured Cover Photo Card (ONLY Upload and Preview) */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xs font-display uppercase tracking-wider font-bold text-brand-navy">
+              Featured Cover Photo
+            </h2>
+            <p className="text-xs text-gray-500 font-sans mt-0.5">
+              Upload a high-resolution cover photo for this article.
+            </p>
+          </div>
+          <span className="text-[10px] font-mono text-gray-400 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
+            16:9 Landscape
+          </span>
+        </div>
 
-            <div>
-              <label className="block text-xs font-display uppercase tracking-wider font-bold text-brand-navy/80 mb-1.5">
-                Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg text-xs font-display uppercase tracking-wider border border-brand-navy/20 bg-brand-island-spice/30 text-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-yellow"
+        {/* Upload Box / Image Preview Box */}
+        <div className="relative aspect-video max-w-xl mx-auto rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-2xs group">
+          {coverImage ? (
+            <>
+              <Image
+                src={coverImage}
+                alt={title || "Article cover photo"}
+                fill
+                className="object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => setCoverImage("")}
+                className="absolute top-3 right-3 p-2 rounded-full bg-brand-navy/80 hover:bg-red-600 text-white transition-colors shadow-md cursor-pointer z-10"
+                title="Remove image"
               >
-                {BLOG_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Cover Image Upload Card */}
-          <div className="bg-brand-white p-5 rounded-xl border border-brand-navy/10 shadow-xs space-y-4">
-            <label className="block text-xs font-display uppercase tracking-wider font-bold text-brand-navy/80">
-              Featured Cover Image <span className="text-red-500">*</span>
-            </label>
-
-            {coverImage ? (
-              <div className="relative aspect-video rounded-lg overflow-hidden border border-brand-navy/10 group">
-                <Image
-                  src={coverImage}
-                  alt={coverImageAlt || "Cover Preview"}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-brand-navy/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <label
-                    htmlFor="cover-image-upload"
-                    className="cursor-pointer bg-brand-white text-brand-navy px-3 py-1.5 rounded text-xs font-display uppercase tracking-wider font-bold"
-                  >
-                    Change Image
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setCoverImage("")}
-                    className="bg-red-600 text-brand-white px-3 py-1.5 rounded text-xs font-display uppercase tracking-wider font-bold"
-                  >
-                    Remove
-                  </button>
-                </div>
+                <X className="w-4 h-4 stroke-[2.5]" />
+              </button>
+              <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-xs text-white px-2.5 py-1 rounded-md text-[10px] font-display uppercase tracking-wider font-bold">
+                Cover Preview
               </div>
-            ) : (
-              <label
-                htmlFor="cover-image-upload"
-                className="cursor-pointer border-2 border-dashed border-brand-navy/20 hover:border-brand-yellow rounded-xl p-6 flex flex-col items-center justify-center text-center transition-colors bg-brand-island-spice/30"
-              >
-                <UploadCloud className="w-8 h-8 text-brand-navy/40 mb-2" />
-                <span className="text-xs font-display uppercase tracking-wider font-bold text-brand-navy">
-                  {uploadingImage ? "Uploading Image..." : "Upload Cover Image"}
+            </>
+          ) : (
+            <label
+              htmlFor="simple-photo-upload"
+              className="w-full h-full flex flex-col items-center justify-center text-center p-6 space-y-3 cursor-pointer hover:bg-gray-100/70 transition-all border-2 border-dashed border-gray-300 hover:border-brand-navy rounded-2xl group"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-brand-yellow/20 text-brand-navy flex items-center justify-center border border-brand-yellow/30 group-hover:scale-105 transition-transform">
+                <UploadCloud className="w-7 h-7 text-brand-navy stroke-[2.2]" />
+              </div>
+              <div className="space-y-1">
+                <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-navy text-white text-xs font-display uppercase tracking-wider font-bold shadow-xs group-hover:bg-[#14204A] transition-colors">
+                  <UploadCloud className="w-4 h-4 text-brand-yellow" />
+                  <span>{uploadingImage ? "Uploading..." : "Upload Cover Photo"}</span>
                 </span>
-                <span className="text-[11px] text-brand-navy/50 mt-1">
-                  JPEG, PNG, WebP up to 5MB
-                </span>
-              </label>
-            )}
-
-            <input
-              id="cover-image-upload"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleFileUpload}
-              className="hidden"
-              disabled={uploadingImage}
-            />
-
-            <div>
-              <label className="block text-[11px] font-display uppercase tracking-wider text-brand-navy/70 mb-1">
-                Image URL or Preset Path
-              </label>
-              <Input
-                type="text"
-                placeholder="/images/refined/blog_hero.webp"
-                value={coverImage}
-                onChange={(e) => setCoverImage(e.target.value)}
-                className="h-8 text-xs font-mono text-brand-navy"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-display uppercase tracking-wider text-brand-navy/70 mb-1">
-                Image Alt Text
-              </label>
-              <Input
-                type="text"
-                placeholder="Descriptive caption for accessibility"
-                value={coverImageAlt}
-                onChange={(e) => setCoverImageAlt(e.target.value)}
-                className="h-8 text-xs text-brand-navy"
-              />
-            </div>
-          </div>
-
-          {/* Author Card */}
-          <div className="bg-brand-white p-5 rounded-xl border border-brand-navy/10 shadow-xs space-y-3">
-            <label className="block text-xs font-display uppercase tracking-wider font-bold text-brand-navy/80">
-              Author Information
+                <p className="text-[11px] text-gray-400 font-sans pt-1">
+                  Click to select photo or drag and drop (JPG, PNG, WebP up to 5MB)
+                </p>
+              </div>
             </label>
-            <div>
-              <Input
-                type="text"
-                placeholder="Author Name"
-                value={authorName}
-                onChange={(e) => setAuthorName(e.target.value)}
-                className="h-8 text-xs text-brand-navy mb-2"
-              />
-              <Input
-                type="text"
-                placeholder="Role / Title"
-                value={authorRole}
-                onChange={(e) => setAuthorRole(e.target.value)}
-                className="h-8 text-xs text-brand-navy"
-              />
-            </div>
-          </div>
+          )}
+        </div>
 
-          {/* SEO Metadata Card */}
-          <div className="bg-brand-white p-5 rounded-xl border border-brand-navy/10 shadow-xs space-y-3">
-            <label className="block text-xs font-display uppercase tracking-wider font-bold text-brand-navy/80">
-              SEO Optimization
-            </label>
-            <div>
-              <label className="block text-[11px] text-brand-navy/70 mb-1">
-                Meta Title
-              </label>
-              <Input
-                type="text"
-                placeholder="Defaults to article title"
-                value={seoTitle}
-                onChange={(e) => setSeoTitle(e.target.value)}
-                className="h-8 text-xs text-brand-navy mb-3"
-              />
-              <label className="block text-[11px] text-brand-navy/70 mb-1">
-                Meta Description
-              </label>
-              <Textarea
-                placeholder="Defaults to article excerpt"
-                value={seoDescription}
-                onChange={(e) => setSeoDescription(e.target.value)}
-                rows={2}
-                className="text-xs text-brand-navy"
-              />
-            </div>
+        <input
+          id="simple-photo-upload"
+          type="file"
+          accept="image/*"
+          onChange={handleFileUpload}
+          disabled={uploadingImage}
+          className="hidden"
+        />
+      </div>
+
+      {/* 3. SIMPLE BIG DESCRIPTION / CONTENT CARD */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 shadow-xs space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xs font-display uppercase tracking-wider font-bold text-brand-navy">
+              Article Description &amp; Content <span className="text-red-500">*</span>
+            </h2>
+            <p className="text-xs text-gray-500 font-sans mt-0.5">
+              Write your article description and details here. Paragraphs format automatically.
+            </p>
           </div>
+          <span className="text-[11px] font-mono text-gray-400">
+            {content.length} characters
+          </span>
+        </div>
+
+        {/* Simple Big Textarea */}
+        <textarea
+          id="article-main-editor"
+          rows={16}
+          placeholder="Write your article description here... Type naturally in full paragraphs.
+
+You can explain roofing solutions, maintenance advice, materials, or architectural guidelines here."
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="w-full p-4 sm:p-5 rounded-xl border border-gray-200 focus:bg-white focus:border-brand-navy focus:ring-2 focus:ring-brand-yellow/30 bg-gray-50 text-base text-brand-navy placeholder:text-gray-400 outline-none resize-y min-h-[380px] leading-relaxed font-sans transition-all"
+          required
+        />
+      </div>
+
+      {/* Bottom Action Bar */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-2 text-xs text-gray-500 font-sans">
+          <span>Category:</span>
+          <span className="font-bold text-brand-navy uppercase tracking-wider font-display">
+            {category}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/blogs"
+            className="px-4 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-600 text-xs font-display uppercase tracking-wider font-bold transition-colors"
+          >
+            Cancel
+          </Link>
+
+          <Button
+            type="button"
+            variant="primary"
+            disabled={saving}
+            onClick={handleSave}
+            className="px-6 py-2.5 rounded-xl bg-brand-yellow hover:bg-[#F3B81F] text-brand-navy text-xs font-display uppercase tracking-wider font-bold shadow-xs hover:shadow-sm cursor-pointer"
+          >
+            <Send className="w-3.5 h-3.5 mr-1.5 text-brand-navy" />
+            <span>{isEditing ? "Update Article" : "Publish Article Now"}</span>
+          </Button>
         </div>
       </div>
     </div>

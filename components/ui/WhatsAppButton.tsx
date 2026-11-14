@@ -1,20 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
+import { contactInfo } from "@/data/contact";
 
 export function WhatsAppButton() {
   const [isHovered, setIsHovered] = useState(false);
-  const phoneNumber = "919747506015";
+  const phoneNumber = contactInfo.whatsappNumber || "918136983928";
   const defaultMessage = encodeURIComponent(
-    "Hello WELTRIQ Roofing, I would like to enquire about your roofing solutions."
+    contactInfo.whatsappDefaultMessage ||
+      "Hello WELTRIQ Team, I would like to enquire about your roofing solutions."
   );
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${defaultMessage}`;
 
   return (
-    <div className="fixed bottom-4 sm:bottom-5 right-4 sm:right-5 z-40 pointer-events-auto select-none print:hidden flex items-center">
+    <div className="fixed bottom-5 sm:bottom-6 right-5 sm:right-6 z-40 pointer-events-auto select-none print:hidden flex items-center">
       {/* Left-Side Navy Tooltip Pill with White Text on Hover */}
       <div
-        className={`absolute right-full mr-2.5 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`absolute right-full mr-3 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isHovered
             ? "opacity-100 translate-x-0"
             : "opacity-0 translate-x-2 pointer-events-none"
@@ -30,7 +32,7 @@ export function WhatsAppButton() {
         </div>
       </div>
 
-      {/* Circular Green WhatsApp Button (Compact, Elegant UI/UX Size) */}
+      {/* Circular Green WhatsApp Button (Enhanced Comfortable Touch & Click Size) */}
       <a
         href={whatsappUrl}
         target="_blank"
@@ -38,10 +40,10 @@ export function WhatsAppButton() {
         aria-label="Chat with WELTRIQ Roofing on WhatsApp"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="group relative flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#25D366] hover:bg-[#20ba59] active:bg-[#1da850] text-white shadow-[0_3px_12px_rgba(37,211,102,0.35)] hover:shadow-[0_6px_18px_rgba(37,211,102,0.55)] animate-whatsapp-breathe hover:scale-105 active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] touch-manipulation cursor-pointer focus:outline-none focus-visible:ring-3 focus-visible:ring-[#25D366]/40"
+        className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#25D366] hover:bg-[#20ba59] active:bg-[#1da850] text-white shadow-[0_4px_16px_rgba(37,211,102,0.4)] hover:shadow-[0_8px_24px_rgba(37,211,102,0.6)] animate-whatsapp-breathe hover:scale-105 active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] touch-manipulation cursor-pointer focus:outline-none focus-visible:ring-3 focus-visible:ring-[#25D366]/40"
       >
         {/* Official WhatsApp Vector Icon */}
-        <div className="flex items-center justify-center w-5 h-5 sm:w-5.5 sm:h-5.5 transition-transform duration-300 group-hover:scale-110">
+        <div className="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-300 group-hover:scale-110">
           <svg
             viewBox="0 0 24 24"
             width="100%"

@@ -18,10 +18,10 @@ export default function ContactPage() {
       {/* 01. Contact Hero */}
       <ContactHero />
 
-      {/* 02. Enquiry Section */}
+      {/* 02. Enquiry Section (Form) */}
       <ContactEnquiry />
 
-      {/* 03. Direct Contact */}
+      {/* 03. Unified Direct Contact & Office Location (Cards + Interactive Map) */}
       <ContactDirectInfo />
     </main>
   );

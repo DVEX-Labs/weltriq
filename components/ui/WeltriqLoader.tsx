@@ -42,10 +42,10 @@ export function WeltriqLoader() {
         {/* Navbar Logo with Smooth "Breathe In / Breathe Out" Animation */}
         <div className="animate-logo-breathe">
           <Image
-            src="/images/logo/weltriq-logo.png"
+            src="/logo/weltriq-logo.svg"
             alt="WELTRIQ - Professional Roofing Solutions"
             width={320}
-            height={88}
+            height={80}
             priority
             className="h-14 sm:h-16 md:h-20 w-auto object-contain select-none"
           />

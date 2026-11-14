@@ -1,0 +1,83 @@
+[
+  {
+    "id": "clay-tile",
+    "number": "01",
+    "title": "Clay Tile Roofing",
+    "description": "Traditional clay tile roofing that blends heritage craftsmanship with modern installation standards for lasting beauty and performance.",
+    "image": "/images/service_images/clay_tile_roofing.png",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "updatedAt": "2026-10-01T00:00:00.000Z"
+  },
+  {
+    "id": "metal",
+    "number": "02",
+    "title": "Metal Roofing",
+    "description": "Long-lasting metal roofing systems offering superior strength, modern aesthetics, and excellent resistance to Kerala's monsoon climate.",
+    "image": "/uploads/blogs/f8c302b646c7803bb65e9863d156ca-1794636348502-653bbdd9.jpg",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "updatedAt": "2026-11-14T06:05:54.402Z"
+  },
+  {
+    "id": "ceramic",
+    "number": "03",
+    "title": "Ceramic Roofing",
+    "description": "Premium ceramic roofing tiles offering refined aesthetics, natural thermal insulation, and proven durability in tropical conditions.",
+    "image": "/images/service_images/ceramic_roofing.png",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "updatedAt": "2026-10-01T00:00:00.000Z"
+  },
+  {
+    "id": "polycarbonate",
+    "number": "04",
+    "title": "Polycarbonate Roofing",
+    "description": "Translucent polycarbonate roofing systems bringing natural light into spaces while maintaining UV protection and weatherproofing.",
+    "image": "/images/service_images/polycarbonate_roofing.jpg",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "updatedAt": "2026-10-01T00:00:00.000Z"
+  },
+  {
+    "id": "shingles",
+    "number": "05",
+    "title": "Shingles Roofing",
+    "description": "Architectural shingles providing dimensional texture, multi-layer waterproofing, and superior wind resistance engineered for tropical roof slopes.",
+    "image": "/images/service_images/shingles_roofing.jpeg",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "updatedAt": "2026-10-01T00:00:00.000Z"
+  },
+  {
+    "id": "upvc",
+    "number": "06",
+    "title": "UPVC Roofing",
+    "description": "Lightweight, low-maintenance UPVC roofing solutions ideal for extensions, carports, and covered outdoor spaces.",
+    "image": "/images/service_images/upvc_roofing.jpg",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "updatedAt": "2026-10-01T00:00:00.000Z"
+  },
+  {
+    "id": "stone-coated",
+    "number": "07",
+    "title": "Stone Coated Roofing",
+    "description": "Stone-coated steel roofing combining the structural strength of aluzinc steel with the natural elegance of stone chips for extreme durability.",
+    "image": "/images/service_images/stone_coated_roofing.png",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "updatedAt": "2026-10-01T00:00:00.000Z"
+  },
+  {
+    "id": "roofing-sheet",
+    "number": "08",
+    "title": "Roofing Sheet Installation",
+    "description": "Professional installation of roofing sheets across residential and commercial applications with precise fitting and weatherproofing.",
+    "image": "/images/service_images/roofing_sheet_installation.webp",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "updatedAt": "2026-10-01T00:00:00.000Z"
+  },
+  {
+    "id": "renovation",
+    "number": "09",
+    "title": "Roof Renovation",
+    "description": "Comprehensive roof renovation services that restore, reinforce, and upgrade existing roofing systems to modern performance standards.",
+    "image": "/images/service_images/roof_renovation.webp",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "updatedAt": "2026-10-01T00:00:00.000Z"
+  }
+]

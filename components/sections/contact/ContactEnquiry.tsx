@@ -25,10 +25,12 @@ import {
   KERALA_DISTRICTS,
   ROOFING_SERVICES,
 } from "@/components/ui/FormField";
+import { contactInfo } from "@/data/contact";
 
 export function ContactEnquiry() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [whatsappUrl, setWhatsappUrl] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -45,30 +47,50 @@ export function ContactEnquiry() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone) {
       return;
     }
     setIsSubmitting(true);
 
-    // Save lead to local storage for safety/testing
+    const waMessage = `*New Roofing Enquiry - WELTRIQ*
+• *Name:* ${formData.name}
+• *Phone:* ${formData.phone}
+${formData.email ? `• *Email:* ${formData.email}` : ""}
+${formData.district ? `• *District:* ${formData.district}` : ""}
+${formData.requirement ? `• *Service:* ${formData.requirement}` : ""}
+${formData.message ? `• *Project Notes:* ${formData.message}` : ""}`;
+
+    const targetPhone = contactInfo.whatsappNumber || "918136983928";
+    const waLink = `https://wa.me/${targetPhone}?text=${encodeURIComponent(waMessage)}`;
+    setWhatsappUrl(waLink);
+
+    // 1. Silent Safety Backup: Save to Admin Database
     try {
-      const stored = localStorage.getItem("weltriq_enquiries");
-      const list = stored ? JSON.parse(stored) : [];
-      list.push({
-        ...formData,
-        date: new Date().toISOString(),
+      await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          district: formData.district,
+          service: formData.requirement,
+          message: `${formData.message}${formData.email ? ` (Email: ${formData.email})` : ""}`,
+          source: "Contact Form",
+        }),
       });
-      localStorage.setItem("weltriq_enquiries", JSON.stringify(list));
-    } catch {
-      // Ignore local storage error
+    } catch (err) {
+      console.warn("Silent backup lead error:", err);
     }
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 700);
+    // 2. Immediate WhatsApp Launch
+    try {
+      window.open(waLink, "_blank");
+    } catch { }
+
+    setIsSubmitting(false);
+    setIsSubmitted(true);
   };
 
   return (
@@ -82,7 +104,7 @@ export function ContactEnquiry() {
                 Enquiry Form
               </span>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display uppercase leading-[1.15] text-brand-navy tracking-tight">
-                Share Your Roofing Requirement
+                Book free site inspection.
               </h2>
               <p className="text-sm sm:text-base text-brand-navy/70 leading-relaxed font-sans text-balance pt-1">
                 Tell us about your project. Our technical team will review your requirements, conduct an on-site evaluation, and provide a transparent quotation.
@@ -146,28 +168,41 @@ export function ContactEnquiry() {
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-2xl font-display uppercase text-brand-navy">
-                      Enquiry Received
+                      Enquiry Received &amp; Connecting!
                     </h3>
                     <p className="text-sm text-brand-navy/70 max-w-md mx-auto font-sans leading-relaxed">
-                      Thank you for reaching out to WELTRIQ. Our team has received your details and will contact you shortly.
+                      Thank you for reaching out to WELTRIQ. Your project details have been recorded, and WhatsApp has been launched to connect you directly with our roofing specialist.
                     </p>
                   </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setIsSubmitted(false);
-                      setFormData({
-                        name: "",
-                        phone: "",
-                        email: "",
-                        district: "",
-                        requirement: "",
-                        message: "",
-                      });
-                    }}
-                  >
-                    Submit Another Enquiry
-                  </Button>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                    {whatsappUrl && (
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-display uppercase tracking-wider text-xs font-bold transition-all shadow-md"
+                      >
+                        <span>Open WhatsApp Chat Directly</span>
+                      </a>
+                    )}
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setIsSubmitted(false);
+                        setFormData({
+                          name: "",
+                          phone: "",
+                          email: "",
+                          district: "",
+                          requirement: "",
+                          message: "",
+                        });
+                      }}
+                    >
+                      Submit Another Enquiry
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4 font-[system-ui,sans-serif]">

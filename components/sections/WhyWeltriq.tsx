@@ -62,12 +62,12 @@ export function WhyWeltriq() {
           {/* BOTTOM — Two columns: 5:7 ratio matching About page layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
-            {/* LEFT — Architectural Craftsmanship Visual (Span 5) */}
+            {/* LEFT — Supervision & Managed Roofing Visual (Span 5) */}
             <div className="lg:col-span-5 w-full flex items-center justify-center">
               <div className="relative aspect-[16/11] lg:aspect-[5/4] w-full max-w-[440px] rounded-2xl overflow-hidden border border-brand-navy/10 shadow-[0_12px_40px_rgba(12,21,51,0.08)] group bg-brand-navy/5">
                 <Image
-                  src="/images/refined/why_weltriq_kerala_truss.webp"
-                  alt="WELTRIQ Kerala Architectural Roofing and Truss Engineering"
+                  src="/images/refined/why_weltriq_accountability.jpg"
+                  alt="WELTRIQ Professional Site Supervision and Accountable Roofing Management"
                   fill
                   sizes="(max-width: 1024px) 100vw, 42vw"
                   className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"

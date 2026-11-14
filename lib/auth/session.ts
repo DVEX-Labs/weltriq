@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { cookies } from "next/headers";
+import { checkAdminCredentials } from "./security";
 
 const SESSION_COOKIE_NAME = "weltriq_admin_session";
 const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || "weltriq-secure-blog-admin-secret-2026";
@@ -79,10 +80,7 @@ export function verifySessionToken(token: string | undefined): { valid: boolean;
  * Validate submitted credentials
  */
 export function validateAdminCredentials(username: string, password: string): boolean {
-  const expectedUser = process.env.ADMIN_USERNAME || DEFAULT_ADMIN_USER;
-  const expectedPass = process.env.ADMIN_PASSWORD || DEFAULT_ADMIN_PASS;
-
-  return username.trim() === expectedUser && password === expectedPass;
+  return checkAdminCredentials(username, password);
 }
 
 /**
