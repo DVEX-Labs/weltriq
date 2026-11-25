@@ -159,6 +159,19 @@ export default function RootLayout({
     <html lang="en" className={`${bakbakOne.variable} ${garet.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script
+          async
+          src="https://www.googletagmanager.com/gtm.js?id=GTM-KMN8F7SM"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+            `,
+          }}
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
