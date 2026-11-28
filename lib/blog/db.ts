@@ -1,8 +1,16 @@
 import path from "path";
 import crypto from "crypto";
 import { revalidatePath } from "next/cache";
-import { del } from "@vercel/blob";
-import { readJsonStore, writeJsonStore } from "@/lib/storage/kv";
+import {
+  getSupabaseAdmin,
+  assertWritableStorageAvailable,
+  isSeedCompleted,
+  markSeedCompleted,
+  readLocalJsonFile,
+  writeLocalJsonFile,
+  extractSupabaseStoragePath,
+  MEDIA_BUCKET,
+} from "@/lib/storage/supabase";
 import {
   BlogArticle,
   BlogListQuery,
@@ -17,10 +25,70 @@ import {
 } from "./config";
 
 const DATA_FILE_PATH = path.join(process.cwd(), "data", "blogs.json");
-const REDIS_KEY = "weltriq:blogs";
+const SEED_KEY = "blogs_seeded";
 
-async function readAllArticles(): Promise<BlogArticle[]> {
-  return readJsonStore<BlogArticle[]>(REDIS_KEY, DATA_FILE_PATH, []);
+interface BlogRow {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  cover_image: string;
+  cover_image_alt: string | null;
+  content: string;
+  category: string;
+  tags: string[] | null;
+  status: "draft" | "published";
+  author: { name: string; role?: string } | null;
+  reading_time_minutes: number;
+  seo_title: string | null;
+  seo_description: string | null;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+function rowToArticle(row: BlogRow): BlogArticle {
+  return {
+    id: row.id,
+    title: row.title,
+    slug: row.slug,
+    excerpt: row.excerpt,
+    coverImage: row.cover_image,
+    coverImageAlt: row.cover_image_alt ?? undefined,
+    content: row.content,
+    category: row.category,
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    status: row.status,
+    author: row.author ?? undefined,
+    readingTimeMinutes: row.reading_time_minutes || 1,
+    seoTitle: row.seo_title ?? undefined,
+    seoDescription: row.seo_description ?? undefined,
+    publishedAt: row.published_at ?? undefined,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function articleToRow(article: BlogArticle): BlogRow {
+  return {
+    id: article.id,
+    title: article.title,
+    slug: article.slug,
+    excerpt: article.excerpt,
+    cover_image: article.coverImage,
+    cover_image_alt: article.coverImageAlt ?? null,
+    content: article.content,
+    category: article.category,
+    tags: article.tags ?? [],
+    status: article.status,
+    author: article.author ?? null,
+    reading_time_minutes: article.readingTimeMinutes,
+    seo_title: article.seoTitle ?? null,
+    seo_description: article.seoDescription ?? null,
+    published_at: article.publishedAt ?? null,
+    created_at: article.createdAt,
+    updated_at: article.updatedAt,
+  };
 }
 
 function revalidateBlogRoutes(slugs: string[]): void {
@@ -37,8 +105,44 @@ function revalidateBlogRoutes(slugs: string[]): void {
   }
 }
 
-async function writeAllArticles(articles: BlogArticle[]): Promise<void> {
-  return writeJsonStore<BlogArticle[]>(REDIS_KEY, DATA_FILE_PATH, articles);
+async function readAllArticles(): Promise<BlogArticle[]> {
+  const supabase = getSupabaseAdmin();
+
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("blogs")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Supabase read blogs error:", error.message);
+      throw new Error(`Database error reading blogs: ${error.message}`);
+    }
+
+    if (data && data.length > 0) {
+      return (data as BlogRow[]).map(rowToArticle);
+    }
+
+    // One-time seed from bundled data/blogs.json if never seeded before
+    const alreadySeeded = await isSeedCompleted(supabase, SEED_KEY);
+    if (!alreadySeeded) {
+      const seed = await readLocalJsonFile<BlogArticle[]>(DATA_FILE_PATH, []);
+      if (seed.length > 0) {
+        const { error: seedError } = await supabase
+          .from("blogs")
+          .upsert(seed.map(articleToRow), { onConflict: "id" });
+        if (seedError) {
+          console.error("Supabase seed blogs error:", seedError.message);
+        }
+      }
+      await markSeedCompleted(supabase, SEED_KEY);
+      return seed;
+    }
+
+    return [];
+  }
+
+  return readLocalJsonFile<BlogArticle[]>(DATA_FILE_PATH, []);
 }
 
 /**
@@ -65,9 +169,6 @@ function makeUniqueSlug(candidate: string, existingArticles: BlogArticle[], curr
    PUBLIC QUERIES (PUBLISHED ONLY)
    ========================================================================= */
 
-/**
- * Get paginated published articles for the public blog listing.
- */
 export async function getPublishedArticles(
   query: BlogListQuery = {}
 ): Promise<PaginatedResult<BlogArticle>> {
@@ -93,7 +194,6 @@ export async function getPublishedArticles(
     );
   }
 
-  // Sort by publishedAt descending (or updatedAt if publishedAt is missing)
   filtered.sort((a, b) => {
     const dateA = new Date(a.publishedAt || a.updatedAt).getTime();
     const dateB = new Date(b.publishedAt || b.updatedAt).getTime();
@@ -114,9 +214,6 @@ export async function getPublishedArticles(
   };
 }
 
-/**
- * Fast query for Home Page section or related articles.
- */
 export async function getLatestPublishedArticles(
   limit: number = 3
 ): Promise<BlogArticle[]> {
@@ -124,9 +221,6 @@ export async function getLatestPublishedArticles(
   return result.items;
 }
 
-/**
- * Get a single published article by its unique slug. Returns null for drafts.
- */
 export async function getPublishedArticleBySlug(
   slug: string
 ): Promise<BlogArticle | null> {
@@ -137,9 +231,6 @@ export async function getPublishedArticleBySlug(
   return article || null;
 }
 
-/**
- * Get up to N related articles from the same category (excluding current).
- */
 export async function getRelatedArticles(
   currentSlug: string,
   category: string,
@@ -162,9 +253,6 @@ export async function getRelatedArticles(
    ADMIN QUERIES & MUTATIONS (INCLUDES DRAFTS)
    ========================================================================= */
 
-/**
- * Admin: List all articles with optional search and status filter.
- */
 export async function getAllArticlesAdmin(params: {
   status?: string;
   search?: string;
@@ -196,9 +284,6 @@ export async function getAllArticlesAdmin(params: {
   return filtered;
 }
 
-/**
- * Admin: Retrieve any article by ID.
- */
 export async function getArticleByIdAdmin(
   id: string
 ): Promise<BlogArticle | null> {
@@ -206,12 +291,12 @@ export async function getArticleByIdAdmin(
   return articles.find((a) => a.id === id) || null;
 }
 
-/**
- * Admin: Create a new blog article.
- */
 export async function createArticle(
   input: CreateBlogInput
 ): Promise<BlogArticle> {
+  const supabase = getSupabaseAdmin();
+  assertWritableStorageAvailable(supabase);
+
   const articles = await readAllArticles();
   const now = new Date().toISOString();
 
@@ -241,19 +326,27 @@ export async function createArticle(
     updatedAt: now,
   };
 
-  articles.push(newArticle);
-  await writeAllArticles(articles);
-  revalidateBlogRoutes([slug]);
+  if (supabase) {
+    const { error } = await supabase.from("blogs").insert(articleToRow(newArticle));
+    if (error) {
+      throw new Error(`Failed to save article: ${error.message}`);
+    }
+    await markSeedCompleted(supabase, SEED_KEY);
+  } else {
+    articles.push(newArticle);
+    await writeLocalJsonFile<BlogArticle[]>(DATA_FILE_PATH, articles);
+  }
 
+  revalidateBlogRoutes([slug]);
   return newArticle;
 }
 
-/**
- * Admin: Update an existing article.
- */
 export async function updateArticle(
   input: UpdateBlogInput
 ): Promise<BlogArticle> {
+  const supabase = getSupabaseAdmin();
+  assertWritableStorageAvailable(supabase);
+
   const articles = await readAllArticles();
   const index = articles.findIndex((a) => a.id === input.id);
 
@@ -267,8 +360,6 @@ export async function updateArticle(
   let slug = existing.slug;
   if (input.slug && input.slug !== existing.slug) {
     slug = makeUniqueSlug(generateSlug(input.slug), articles, existing.id);
-  } else if (input.title && !input.slug && input.title !== existing.title) {
-    // If title changed and slug wasn't explicitly specified, keep current slug unless requested
   }
 
   const newStatus = input.status || existing.status;
@@ -297,17 +388,27 @@ export async function updateArticle(
     updatedAt: now,
   };
 
-  articles[index] = updated;
-  await writeAllArticles(articles);
-  revalidateBlogRoutes(slug !== existing.slug ? [existing.slug, slug] : [existing.slug]);
+  if (supabase) {
+    const { error } = await supabase
+      .from("blogs")
+      .update(articleToRow(updated))
+      .eq("id", existing.id);
+    if (error) {
+      throw new Error(`Failed to update article: ${error.message}`);
+    }
+  } else {
+    articles[index] = updated;
+    await writeLocalJsonFile<BlogArticle[]>(DATA_FILE_PATH, articles);
+  }
 
+  revalidateBlogRoutes(slug !== existing.slug ? [existing.slug, slug] : [existing.slug]);
   return updated;
 }
 
-/**
- * Admin: Delete an article by ID.
- */
 export async function deleteArticle(id: string): Promise<boolean> {
+  const supabase = getSupabaseAdmin();
+  assertWritableStorageAvailable(supabase);
+
   const articles = await readAllArticles();
   const index = articles.findIndex((a) => a.id === id);
 
@@ -316,21 +417,26 @@ export async function deleteArticle(id: string): Promise<boolean> {
   }
 
   const removed = articles.splice(index, 1)[0];
-  await writeAllArticles(articles);
 
-  // Clean up Vercel Blob cover image if hosted there
-  if (
-    process.env.BLOB_READ_WRITE_TOKEN &&
-    removed.coverImage?.includes(".blob.vercel-storage.com")
-  ) {
-    try {
-      await del(removed.coverImage);
-    } catch (blobErr) {
-      console.warn("Failed to delete old blob image:", blobErr);
+  if (supabase) {
+    const { error } = await supabase.from("blogs").delete().eq("id", id);
+    if (error) {
+      throw new Error(`Failed to delete article: ${error.message}`);
     }
+
+    const storagePath = extractSupabaseStoragePath(removed.coverImage);
+    if (storagePath) {
+      const { error: removeImgError } = await supabase.storage
+        .from(MEDIA_BUCKET)
+        .remove([storagePath]);
+      if (removeImgError) {
+        console.warn("Failed to remove blog cover from Supabase Storage:", removeImgError.message);
+      }
+    }
+  } else {
+    await writeLocalJsonFile<BlogArticle[]>(DATA_FILE_PATH, articles);
   }
 
   revalidateBlogRoutes([removed.slug]);
-
   return true;
 }

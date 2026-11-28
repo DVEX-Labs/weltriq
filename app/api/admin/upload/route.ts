@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
-import { put } from "@vercel/blob";
 import { isAuthenticatedAdmin } from "@/lib/auth/session";
-import { isServerlessReadOnlyEnv } from "@/lib/storage/kv";
+import {
+  getSupabaseAdmin,
+  isServerlessReadOnlyEnv,
+  MEDIA_BUCKET,
+} from "@/lib/storage/supabase";
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -51,20 +54,38 @@ export async function POST(request: NextRequest) {
     const randomSuffix = crypto.randomBytes(4).toString("hex");
     const filename = `${safeBase || "image"}-${Date.now()}-${randomSuffix}.${ext}`;
 
-    // Production / Cloud: Use Vercel Blob when configured
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      const blob = await put(`blogs/${filename}`, buffer, {
-        access: "public",
-        contentType: file.type,
-      });
-      return NextResponse.json({ url: blob.url, success: true });
+    // Production / Cloud: Use Supabase Storage bucket "weltriq-media"
+    const supabase = getSupabaseAdmin();
+    if (supabase) {
+      const storagePath = `blogs/${filename}`;
+      const { error: uploadError } = await supabase.storage
+        .from(MEDIA_BUCKET)
+        .upload(storagePath, buffer, {
+          contentType: file.type,
+          upsert: false,
+          cacheControl: "31536000",
+        });
+
+      if (uploadError) {
+        console.error("Supabase Storage upload error:", uploadError);
+        return NextResponse.json(
+          { error: `Supabase image upload failed: ${uploadError.message}` },
+          { status: 500 }
+        );
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from(MEDIA_BUCKET)
+        .getPublicUrl(storagePath);
+
+      return NextResponse.json({ url: publicUrlData.publicUrl, success: true });
     }
 
     if (isServerlessReadOnlyEnv()) {
       return NextResponse.json(
         {
           error:
-            "Vercel Blob storage is not connected. Add a Blob Store in your Vercel Storage dashboard to upload images on the live site.",
+            "Supabase is not connected yet. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel to upload images on the live site.",
         },
         { status: 500 }
       );

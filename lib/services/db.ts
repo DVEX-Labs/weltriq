@@ -1,6 +1,13 @@
 import path from "path";
 import { revalidatePath } from "next/cache";
-import { readJsonStore, writeJsonStore } from "@/lib/storage/kv";
+import {
+  getSupabaseAdmin,
+  assertWritableStorageAvailable,
+  isSeedCompleted,
+  markSeedCompleted,
+  readLocalJsonFile,
+  writeLocalJsonFile,
+} from "@/lib/storage/supabase";
 import {
   ManagedService,
   CreateServiceInput,
@@ -11,14 +18,90 @@ import {
 export * from "./types";
 
 const DATA_FILE_PATH = path.join(process.cwd(), "data", "services.json");
-const REDIS_KEY = "weltriq:services";
+const SEED_KEY = "services_seeded";
 
-export async function readAllServices(): Promise<ManagedService[]> {
-  return readJsonStore<ManagedService[]>(REDIS_KEY, DATA_FILE_PATH, []);
+interface ServiceRow {
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  image: string;
+  created_at: string;
+  updated_at: string;
 }
 
-async function writeAllServices(services: ManagedService[]): Promise<void> {
-  return writeJsonStore<ManagedService[]>(REDIS_KEY, DATA_FILE_PATH, services);
+function rowToService(row: ServiceRow): ManagedService {
+  return {
+    id: row.id,
+    number: row.number,
+    title: row.title,
+    description: row.description,
+    image: row.image,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function serviceToRow(s: ManagedService): ServiceRow {
+  return {
+    id: s.id,
+    number: s.number,
+    title: s.title,
+    description: s.description,
+    image: s.image,
+    created_at: s.createdAt,
+    updated_at: s.updatedAt,
+  };
+}
+
+function revalidateServiceRoutes(): void {
+  try {
+    revalidatePath("/");
+    revalidatePath("/services");
+    revalidatePath("/admin");
+    revalidatePath("/admin/services");
+  } catch {
+    // ignore outside request context
+  }
+}
+
+export async function readAllServices(): Promise<ManagedService[]> {
+  const supabase = getSupabaseAdmin();
+
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("services")
+      .select("*")
+      .order("number", { ascending: true });
+
+    if (error) {
+      console.error("Supabase read services error:", error.message);
+      throw new Error(`Database error reading services: ${error.message}`);
+    }
+
+    if (data && data.length > 0) {
+      return (data as ServiceRow[]).map(rowToService);
+    }
+
+    const alreadySeeded = await isSeedCompleted(supabase, SEED_KEY);
+    if (!alreadySeeded) {
+      const seed = await readLocalJsonFile<ManagedService[]>(DATA_FILE_PATH, []);
+      if (seed.length > 0) {
+        const { error: seedError } = await supabase
+          .from("services")
+          .upsert(seed.map(serviceToRow), { onConflict: "id" });
+        if (seedError) {
+          console.error("Supabase seed services error:", seedError.message);
+        }
+      }
+      await markSeedCompleted(supabase, SEED_KEY);
+      return seed;
+    }
+
+    return [];
+  }
+
+  return readLocalJsonFile<ManagedService[]>(DATA_FILE_PATH, []);
 }
 
 function generateServiceId(title: string): string {
@@ -36,6 +119,9 @@ export async function getServiceById(id: string): Promise<ManagedService | null>
 }
 
 export async function createService(input: CreateServiceInput): Promise<ManagedService> {
+  const supabase = getSupabaseAdmin();
+  assertWritableStorageAvailable(supabase);
+
   const all = await readAllServices();
   const trimmedTitle = input.title.trim();
   const trimmedDesc = input.description.trim();
@@ -63,15 +149,16 @@ export async function createService(input: CreateServiceInput): Promise<ManagedS
   const nextNumber = String(nextNumInt).padStart(2, "0");
 
   let finalNumber = nextNumber;
+  let swappedService: ManagedService | null = null;
   if (input.number) {
     const parsed = parseInt(input.number, 10);
     if (!isNaN(parsed) && parsed > 0) {
       const desiredNumber = String(parsed).padStart(2, "0");
-      // If conflicting with existing service, conflicting takes nextNumber
       const conflictIndex = all.findIndex((s) => s.number === desiredNumber);
       if (conflictIndex !== -1) {
         all[conflictIndex].number = nextNumber;
         all[conflictIndex].updatedAt = now;
+        swappedService = all[conflictIndex];
       }
       finalNumber = desiredNumber;
     }
@@ -82,28 +169,41 @@ export async function createService(input: CreateServiceInput): Promise<ManagedS
     number: finalNumber,
     title: trimmedTitle,
     description: trimmedDesc,
-    image: input.image || "/images/service_images/metal_roofing.jpg",
+    image: input.image || "/images/service_images/metal_roofing_structure.jpg",
     createdAt: now,
     updatedAt: now,
   };
 
-  all.push(newService);
+  if (supabase) {
+    if (swappedService) {
+      const { error: swapErr } = await supabase
+        .from("services")
+        .update({ number: swappedService.number, updated_at: swappedService.updatedAt })
+        .eq("id", swappedService.id);
+      if (swapErr) {
+        throw new Error(`Failed to reorder existing service: ${swapErr.message}`);
+      }
+    }
 
-  // Keep all services sorted by sequence number ascending
-  all.sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10));
+    const { error } = await supabase.from("services").insert(serviceToRow(newService));
+    if (error) {
+      throw new Error(`Failed to create service: ${error.message}`);
+    }
+    await markSeedCompleted(supabase, SEED_KEY);
+  } else {
+    all.push(newService);
+    all.sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10));
+    await writeLocalJsonFile<ManagedService[]>(DATA_FILE_PATH, all);
+  }
 
-  await writeAllServices(all);
-
-  try {
-    revalidatePath("/");
-    revalidatePath("/services");
-    revalidatePath("/admin/services");
-  } catch {}
-
+  revalidateServiceRoutes();
   return newService;
 }
 
 export async function updateService(input: UpdateServiceInput): Promise<ManagedService> {
+  const supabase = getSupabaseAdmin();
+  assertWritableStorageAvailable(supabase);
+
   const all = await readAllServices();
   const index = all.findIndex((s) => s.id === input.id);
 
@@ -127,6 +227,7 @@ export async function updateService(input: UpdateServiceInput): Promise<ManagedS
   }
 
   let updatedNumber = current.number;
+  let swappedService: ManagedService | null = null;
   if (input.number !== undefined) {
     const parsedNum = parseInt(input.number, 10);
     if (!isNaN(parsedNum) && parsedNum > 0) {
@@ -134,11 +235,11 @@ export async function updateService(input: UpdateServiceInput): Promise<ManagedS
       const oldNumberStr = current.number;
 
       if (targetNumberStr !== oldNumberStr) {
-        // Find existing service with targetNumberStr and SWAP numbers
         const conflictingIndex = all.findIndex((s) => s.id !== current.id && s.number === targetNumberStr);
         if (conflictingIndex !== -1) {
           all[conflictingIndex].number = oldNumberStr;
           all[conflictingIndex].updatedAt = now;
+          swappedService = all[conflictingIndex];
         }
         updatedNumber = targetNumberStr;
       }
@@ -154,23 +255,38 @@ export async function updateService(input: UpdateServiceInput): Promise<ManagedS
     updatedAt: now,
   };
 
-  all[index] = updatedService;
+  if (supabase) {
+    if (swappedService) {
+      const { error: swapErr } = await supabase
+        .from("services")
+        .update({ number: swappedService.number, updated_at: swappedService.updatedAt })
+        .eq("id", swappedService.id);
+      if (swapErr) {
+        throw new Error(`Failed to swap service sequence: ${swapErr.message}`);
+      }
+    }
 
-  // Keep all services sorted by sequence number ascending
-  all.sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10));
+    const { error } = await supabase
+      .from("services")
+      .update(serviceToRow(updatedService))
+      .eq("id", current.id);
+    if (error) {
+      throw new Error(`Failed to update service: ${error.message}`);
+    }
+  } else {
+    all[index] = updatedService;
+    all.sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10));
+    await writeLocalJsonFile<ManagedService[]>(DATA_FILE_PATH, all);
+  }
 
-  await writeAllServices(all);
-
-  try {
-    revalidatePath("/");
-    revalidatePath("/services");
-    revalidatePath("/admin/services");
-  } catch {}
-
+  revalidateServiceRoutes();
   return updatedService;
 }
 
 export async function deleteService(id: string): Promise<boolean> {
+  const supabase = getSupabaseAdmin();
+  assertWritableStorageAvailable(supabase);
+
   const all = await readAllServices();
   const filtered = all.filter((s) => s.id !== id);
 
@@ -178,19 +294,29 @@ export async function deleteService(id: string): Promise<boolean> {
     return false;
   }
 
-  // Renumber remaining services consecutively 01, 02...
   const renumbered = filtered.map((s, idx) => ({
     ...s,
     number: String(idx + 1).padStart(2, "0"),
   }));
 
-  await writeAllServices(renumbered);
+  if (supabase) {
+    const { error: delErr } = await supabase.from("services").delete().eq("id", id);
+    if (delErr) {
+      throw new Error(`Failed to delete service: ${delErr.message}`);
+    }
 
-  try {
-    revalidatePath("/");
-    revalidatePath("/services");
-    revalidatePath("/admin/services");
-  } catch {}
+    if (renumbered.length > 0) {
+      const { error: renumberErr } = await supabase
+        .from("services")
+        .upsert(renumbered.map(serviceToRow), { onConflict: "id" });
+      if (renumberErr) {
+        console.warn("Failed to renumber remaining services:", renumberErr.message);
+      }
+    }
+  } else {
+    await writeLocalJsonFile<ManagedService[]>(DATA_FILE_PATH, renumbered);
+  }
 
+  revalidateServiceRoutes();
   return true;
 }

@@ -99,13 +99,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success: true, message: "Article deleted successfully." });
   } catch (error: unknown) {
     console.error("Delete article error:", error);
-    const code = (error as NodeJS.ErrnoException | undefined)?.code;
-    const message =
-      code === "EROFS" || code === "EACCES" || code === "EPERM"
-        ? "Cannot modify data/blogs.json on a read-only serverless filesystem. Connect a persistent database/storage or update data/blogs.json via Git."
-        : error instanceof Error
-          ? error.message
-          : "Failed to delete article.";
+    const message = error instanceof Error ? error.message : "Failed to delete article.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
