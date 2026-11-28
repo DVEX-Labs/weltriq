@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { ManagedService, MAX_DESCRIPTION_LENGTH } from "@/lib/services/types";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface AdminServiceFormProps {
   initialService?: ManagedService;
@@ -30,6 +31,7 @@ export function AdminServiceForm({
   allServices = [],
 }: AdminServiceFormProps) {
   const router = useRouter();
+  const toast = useToast();
 
   // Compute next available number for a new service
   const existingCount = allServices.length > 0 ? allServices.length : 9;
@@ -94,14 +96,17 @@ export function AdminServiceForm({
         body: formData,
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(data.error || "Image upload failed.");
+        throw new Error(data?.error || `Image upload failed (HTTP ${res.status}).`);
       }
 
       setImage(data.url);
+      toast.success("Image Uploaded", "Service card photo uploaded successfully.");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to upload image.");
+      const msg = err instanceof Error ? err.message : "Failed to upload image.";
+      setError(msg);
+      toast.error("Upload Failed", msg);
     } finally {
       setUploading(false);
     }
@@ -127,19 +132,27 @@ export function AdminServiceForm({
     setSuccess(null);
 
     if (!title.trim()) {
-      setError("Please provide a service title.");
+      const msg = "Please provide a service title.";
+      setError(msg);
+      toast.error("Title Required", msg);
       return;
     }
     if (!description.trim()) {
-      setError("Please provide a service description.");
+      const msg = "Please provide a service description.";
+      setError(msg);
+      toast.error("Description Required", msg);
       return;
     }
     if (isOverLimit) {
-      setError(`Description exceeds the ${MAX_DESCRIPTION_LENGTH} character limit for UI/UX stability.`);
+      const msg = `Description exceeds the ${MAX_DESCRIPTION_LENGTH} character limit for UI/UX stability.`;
+      setError(msg);
+      toast.error("Description Too Long", msg);
       return;
     }
     if (!image.trim()) {
-      setError("Please upload an image for this service card.");
+      const msg = "Please upload an image for this service card.";
+      setError(msg);
+      toast.error("Image Required", msg);
       return;
     }
 
@@ -157,25 +170,26 @@ export function AdminServiceForm({
         body: JSON.stringify(body),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(data.error || "Failed to save service.");
+        throw new Error(data?.error || `Failed to save service (HTTP ${res.status}).`);
       }
 
-      setSuccess(
-        isEditing
-          ? isNumberChanged && conflictingCard
-            ? `Service updated! Number swapped with "${conflictingCard.title}".`
-            : "Service updated successfully!"
-          : "Service created successfully!"
-      );
+      const successMsg = isEditing
+        ? isNumberChanged && conflictingCard
+          ? `Service updated! Number swapped with "${conflictingCard.title}".`
+          : `"${title.trim()}" has been updated.`
+        : `"${title.trim()}" has been added to the deck.`;
 
-      setTimeout(() => {
-        router.push("/admin/services");
-        router.refresh();
-      }, 700);
+      setSuccess(successMsg);
+      toast.success(isEditing ? "Service Updated" : "Service Created", successMsg);
+
+      router.push("/admin/services");
+      router.refresh();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An error occurred.");
+      const msg = err instanceof Error ? err.message : "An error occurred.";
+      setError(msg);
+      toast.error("Save Failed", msg);
       setSaving(false);
     }
   };

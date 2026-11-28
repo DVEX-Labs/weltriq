@@ -26,6 +26,7 @@ import {
   getLeadTimeframeCounts,
   exportLeadsToCSV,
 } from "@/lib/leads/utils";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface AdminLeadsListProps {
   initialLeads: LeadEnquiry[];
@@ -33,6 +34,7 @@ interface AdminLeadsListProps {
 
 export function AdminLeadsList({ initialLeads }: AdminLeadsListProps) {
   const router = useRouter();
+  const toast = useToast();
   const [leads, setLeads] = useState<LeadEnquiry[]>(initialLeads);
   const [timeframe, setTimeframe] = useState<TimeframeFilter>("today");
   const [search, setSearch] = useState("");
@@ -64,6 +66,7 @@ export function AdminLeadsList({ initialLeads }: AdminLeadsListProps) {
 
   const handleExport = () => {
     exportLeadsToCSV(filtered, timeframe);
+    toast.success("Leads Exported", `${filtered.length} inquiry record${filtered.length === 1 ? "" : "s"} downloaded as CSV.`);
   };
 
   const timeframeLabels: { key: TimeframeFilter; label: string; count: number }[] = [
@@ -87,12 +90,14 @@ export function AdminLeadsList({ initialLeads }: AdminLeadsListProps) {
       if (res.ok) {
         setLeads((prev) => prev.filter((l) => l.id !== deletingId));
         setDeletingId(null);
+        toast.success("Lead Removed", "Customer inquiry has been permanently deleted.");
         router.refresh();
       } else {
-        alert("Failed to delete lead from backup.");
+        const data = await res.json().catch(() => null);
+        toast.error("Delete Failed", data?.error || "Failed to delete lead from records.");
       }
     } catch {
-      alert("Error deleting lead.");
+      toast.error("Network Error", "Error deleting lead. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -110,10 +115,21 @@ export function AdminLeadsList({ initialLeads }: AdminLeadsListProps) {
         setLeads((prev) =>
           prev.map((l) => (l.id === id ? { ...l, status: newStatus } : l))
         );
+        const statusLabels: Record<LeadEnquiry["status"], string> = {
+          new: "New",
+          contacted: "Contacted",
+          inspection_scheduled: "Inspection Scheduled",
+          completed: "Completed",
+        };
+        toast.success("Status Updated", `Lead marked as ${statusLabels[newStatus]}.`);
         router.refresh();
+      } else {
+        const data = await res.json().catch(() => null);
+        toast.error("Update Failed", data?.error || "Could not update lead status.");
       }
     } catch (err) {
       console.error("Status update error:", err);
+      toast.error("Network Error", "Failed to update lead status.");
     }
   };
 

@@ -17,6 +17,7 @@ import {
 import { BlogArticle } from "@/lib/blog/types";
 import { BLOG_CATEGORIES, generateSlug } from "@/lib/blog/config";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface AdminBlogFormProps {
   initialData?: BlogArticle;
@@ -25,6 +26,7 @@ interface AdminBlogFormProps {
 
 export function AdminBlogForm({ initialData, isEditing = false }: AdminBlogFormProps) {
   const router = useRouter();
+  const toast = useToast();
 
   // Categories list (defaults + any existing category from initialData)
   const initialCategories = Array.from(
@@ -86,12 +88,17 @@ export function AdminBlogForm({ initialData, isEditing = false }: AdminBlogFormP
 
       const data = await res.json().catch(() => null);
       if (!res.ok) {
-        setError(data?.error || `Image upload failed (HTTP ${res.status}).`);
+        const msg = data?.error || `Image upload failed (HTTP ${res.status}).`;
+        setError(msg);
+        toast.error("Upload Failed", msg);
       } else {
         setCoverImage(data.url);
+        toast.success("Image Uploaded", "Cover photo is ready for your article.");
       }
     } catch {
-      setError("Network error while uploading image.");
+      const msg = "Network error while uploading image.";
+      setError(msg);
+      toast.error("Upload Error", msg);
     } finally {
       setUploadingImage(false);
     }
@@ -102,13 +109,17 @@ export function AdminBlogForm({ initialData, isEditing = false }: AdminBlogFormP
     setError(null);
 
     if (!title.trim()) {
-      setError("Please write an article title before saving.");
+      const msg = "Please write an article title before saving.";
+      setError(msg);
+      toast.error("Title Required", msg);
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
     if (!content.trim()) {
-      setError("Please write the article description/content.");
+      const msg = "Please write the article description/content.";
+      setError(msg);
+      toast.error("Content Required", msg);
       window.scrollTo({ top: 300, behavior: "smooth" });
       return;
     }
@@ -118,7 +129,9 @@ export function AdminBlogForm({ initialData, isEditing = false }: AdminBlogFormP
     const finalExcerpt = cleanText.slice(0, 150) + (cleanText.length > 150 ? "..." : "");
 
     if (!coverImage.trim()) {
-      setError("Please upload a featured cover photo for this article.");
+      const msg = "Please upload a featured cover photo for this article.";
+      setError(msg);
+      toast.error("Cover Image Required", msg);
       window.scrollTo({ top: 180, behavior: "smooth" });
       return;
     }
@@ -155,15 +168,25 @@ export function AdminBlogForm({ initialData, isEditing = false }: AdminBlogFormP
 
       const data = await res.json().catch(() => null);
       if (!res.ok) {
-        setError(data?.error || `Failed to save article (HTTP ${res.status}).`);
+        const msg = data?.error || `Failed to save article (HTTP ${res.status}).`;
+        setError(msg);
+        toast.error("Save Failed", msg);
         setSaving(false);
         return;
       }
 
+      toast.success(
+        isEditing ? "Article Updated" : "Article Published",
+        isEditing
+          ? `"${title.trim()}" changes have been saved.`
+          : `"${title.trim()}" is now live on the website.`
+      );
       router.push("/admin/blogs");
       router.refresh();
     } catch {
-      setError("Network error while saving. Please check your connection.");
+      const msg = "Network error while saving. Please check your connection.";
+      setError(msg);
+      toast.error("Network Error", msg);
       setSaving(false);
     }
   };

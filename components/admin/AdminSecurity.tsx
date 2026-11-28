@@ -12,10 +12,11 @@ import {
   Lock,
   UserCheck,
   ShieldAlert,
-  X,
 } from "lucide-react";
+import { useToast } from "@/components/providers/ToastProvider";
 
 export function AdminSecurity() {
+  const toast = useToast();
   const [username, setUsername] = useState<string>("admin");
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,47 +32,32 @@ export function AdminSecurity() {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  // Status messages and Toast
+  // Inline status alert
   const [status, setStatus] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [toast, setToast] = useState<{
-    show: boolean;
-    type: "success" | "error";
-    title: string;
-    message: string;
-  } | null>(null);
-
-  // Auto-dismiss toast notification after 4.5 seconds
-  useEffect(() => {
-    if (!toast?.show) return;
-    const timer = setTimeout(() => {
-      setToast((prev) => (prev ? { ...prev, show: false } : null));
-    }, 4500);
-    return () => clearTimeout(timer);
-  }, [toast?.show]);
 
   const showToast = (type: "success" | "error", title: string, message: string) => {
-    setToast({ show: true, type, title, message });
+    toast.showToast(type, title, message);
   };
 
   useEffect(() => {
+    const fetchSecurityData = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/admin/security");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.username) setUsername(data.username);
+          if (data.lastUpdated) setLastUpdated(data.lastUpdated);
+        }
+      } catch (err) {
+        console.error("Failed to fetch security details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchSecurityData();
   }, []);
-
-  const fetchSecurityData = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/admin/security");
-      if (res.ok) {
-        const data = await res.json();
-        if (data.username) setUsername(data.username);
-        if (data.lastUpdated) setLastUpdated(data.lastUpdated);
-      }
-    } catch (err) {
-      console.error("Failed to fetch security details:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -389,51 +375,6 @@ export function AdminSecurity() {
           </div>
         </form>
       </div>
-
-      {/* Floating Animated Toast Notification */}
-      {toast?.show && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-sm sm:max-w-md w-full animate-in fade-in slide-in-from-bottom-5 duration-300">
-          <div
-            className={`p-4 rounded-2xl shadow-2xl border flex items-start gap-3.5 backdrop-blur-md ${
-              toast.type === "success"
-                ? "bg-[#0C1533] text-white border-emerald-500/30"
-                : "bg-[#0C1533] text-white border-red-500/30"
-            }`}
-          >
-            <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                toast.type === "success"
-                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                  : "bg-red-500/20 text-red-400 border border-red-500/30"
-              }`}
-            >
-              {toast.type === "success" ? (
-                <CheckCircle2 className="w-5 h-5 stroke-[2.2]" />
-              ) : (
-                <AlertCircle className="w-5 h-5 stroke-[2.2]" />
-              )}
-            </div>
-
-            <div className="flex-1 min-w-0 pr-1">
-              <h4 className="text-xs font-display uppercase tracking-wider font-bold text-white">
-                {toast.title}
-              </h4>
-              <p className="text-xs text-white/75 font-sans mt-0.5 leading-relaxed">
-                {toast.message}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setToast((prev) => (prev ? { ...prev, show: false } : null))}
-              className="text-white/40 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors shrink-0"
-              aria-label="Dismiss toast"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

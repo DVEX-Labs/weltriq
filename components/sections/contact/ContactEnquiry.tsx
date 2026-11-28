@@ -17,6 +17,7 @@ import {
   FileText,
   ArrowRight,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import {
   FormInput,
@@ -26,10 +27,13 @@ import {
   ROOFING_SERVICES,
 } from "@/components/ui/FormField";
 import { contactInfo } from "@/data/contact";
+import { useToast } from "@/components/providers/ToastProvider";
 
 export function ContactEnquiry() {
+  const toast = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [whatsappUrl, setWhatsappUrl] = useState("");
   const [formData, setFormData] = useState({
     name: "",
@@ -44,23 +48,48 @@ export function ContactEnquiry() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    if (formError) setFormError(null);
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone) {
+    setFormError(null);
+
+    const trimmedName = formData.name.trim();
+    const phoneDigits = formData.phone.replace(/\D/g, "");
+    const trimmedEmail = formData.email.trim();
+
+    if (!trimmedName) {
+      const msg = "Please enter your full name before submitting.";
+      setFormError(msg);
+      toast.error("Name Required", msg);
       return;
     }
+
+    if (phoneDigits.length < 10) {
+      const msg = "Please enter a valid 10-digit phone or WhatsApp number.";
+      setFormError(msg);
+      toast.error("Valid Phone Required", msg);
+      return;
+    }
+
+    if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      const msg = "Please enter a valid email address or leave it blank.";
+      setFormError(msg);
+      toast.error("Invalid Email", msg);
+      return;
+    }
+
     setIsSubmitting(true);
 
     const waMessage = `*New Roofing Enquiry - WELTRIQ*
-• *Name:* ${formData.name}
-• *Phone:* ${formData.phone}
-${formData.email ? `• *Email:* ${formData.email}` : ""}
+• *Name:* ${trimmedName}
+• *Phone:* ${formData.phone.trim()}
+${trimmedEmail ? `• *Email:* ${trimmedEmail}` : ""}
 ${formData.district ? `• *District:* ${formData.district}` : ""}
 ${formData.requirement ? `• *Service:* ${formData.requirement}` : ""}
-${formData.message ? `• *Project Notes:* ${formData.message}` : ""}`;
+${formData.message ? `• *Project Notes:* ${formData.message.trim()}` : ""}`;
 
     const targetPhone = contactInfo.whatsappNumber || "918136983928";
     const waLink = `https://wa.me/${targetPhone}?text=${encodeURIComponent(waMessage)}`;
@@ -72,11 +101,11 @@ ${formData.message ? `• *Project Notes:* ${formData.message}` : ""}`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formData.name,
-          phone: formData.phone,
+          name: trimmedName,
+          phone: formData.phone.trim(),
           district: formData.district,
           service: formData.requirement,
-          message: `${formData.message}${formData.email ? ` (Email: ${formData.email})` : ""}`,
+          message: `${formData.message.trim()}${trimmedEmail ? ` (Email: ${trimmedEmail})` : ""}`,
           source: "Contact Form",
         }),
       });
@@ -91,6 +120,10 @@ ${formData.message ? `• *Project Notes:* ${formData.message}` : ""}`;
 
     setIsSubmitting(false);
     setIsSubmitted(true);
+    toast.success(
+      "Enquiry Submitted!",
+      `Thank you, ${trimmedName}. Your details are saved and WhatsApp is opening.`
+    );
   };
 
   return (
@@ -159,11 +192,13 @@ ${formData.message ? `• *Project Notes:* ${formData.message}` : ""}`;
 
           {/* Right Column - Enquiry Form Card */}
           <div className="lg:col-span-7">
-            <div className="rounded-2xl border border-gray-200 bg-brand-white p-6 sm:p-8 md:p-10 shadow-[0_12px_40px_rgba(12,21,51,0.06)] relative">
+            <div className="rounded-2xl sm:rounded-3xl border border-gray-200 bg-brand-white overflow-hidden shadow-[0_12px_40px_rgba(12,21,51,0.06)] relative">
+              <div className="h-1 w-full bg-gradient-to-r from-brand-yellow via-amber-400 to-brand-navy" />
+              <div className="p-6 sm:p-8 md:p-10">
 
               {isSubmitted ? (
-                <div className="py-12 text-center space-y-6 flex flex-col items-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-yellow/20 text-brand-navy">
+                <div className="py-10 sm:py-12 text-center space-y-6 flex flex-col items-center animate-in fade-in duration-300">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-yellow/20 border border-brand-yellow/40 text-brand-navy shadow-xs">
                     <CheckCircle2 className="w-10 h-10 stroke-[2.2]" />
                   </div>
                   <div className="space-y-2">
@@ -205,7 +240,16 @@ ${formData.message ? `• *Project Notes:* ${formData.message}` : ""}`;
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4 font-[system-ui,sans-serif]">
+                <form onSubmit={handleSubmit} noValidate className="space-y-4 font-[system-ui,sans-serif]">
+                  {formError && (
+                    <div
+                      role="alert"
+                      className="p-3.5 rounded-xl bg-red-50 border border-red-200/90 text-red-800 text-xs sm:text-sm font-sans font-medium flex items-start gap-2.5 animate-in fade-in duration-200"
+                    >
+                      <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                      <span>{formError}</span>
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     {/* Name */}
                     <FormInput
@@ -299,19 +343,20 @@ ${formData.message ? `• *Project Notes:* ${formData.message}` : ""}`;
                   </div>
 
                   {/* Trust Micro-badges */}
-                  <div className="flex items-center justify-center gap-4 pt-1 text-[11px] text-brand-navy/70 font-sans font-medium">
+                  <div className="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-4 pt-1 text-[10px] sm:text-[11px] text-brand-navy/70 font-sans font-medium text-center">
                     <span className="flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-brand-navy" />
+                      <ShieldCheck className="w-3.5 h-3.5 text-brand-navy shrink-0" />
                       100% Free Consultation
                     </span>
-                    <span>•</span>
+                    <span className="hidden sm:inline text-brand-navy/30">•</span>
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-brand-navy" />
+                      <Clock className="w-3.5 h-3.5 text-brand-navy shrink-0" />
                       Guaranteed 24-Hr Response
                     </span>
                   </div>
                 </form>
               )}
+              </div>
             </div>
           </div>
         </div>

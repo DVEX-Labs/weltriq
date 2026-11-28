@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { BlogArticle } from "@/lib/blog/types";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface AdminBlogListProps {
   initialArticles: BlogArticle[];
@@ -30,6 +31,7 @@ const ITEMS_PER_PAGE = 10;
 
 export function AdminBlogList({ initialArticles }: AdminBlogListProps) {
   const router = useRouter();
+  const toast = useToast();
   const [articles, setArticles] = useState<BlogArticle[]>(initialArticles);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -87,6 +89,7 @@ export function AdminBlogList({ initialArticles }: AdminBlogListProps) {
   const handleDelete = async () => {
     if (!deletingId) return;
     setIsDeleting(true);
+    const removedTitle = articleToDelete?.title || "Article";
 
     try {
       const res = await fetch(`/api/admin/blogs?id=${deletingId}`, {
@@ -96,13 +99,14 @@ export function AdminBlogList({ initialArticles }: AdminBlogListProps) {
       if (res.ok) {
         setArticles((prev) => prev.filter((a) => a.id !== deletingId));
         setDeletingId(null);
+        toast.success("Article Deleted", `"${removedTitle}" has been removed.`);
         router.refresh();
       } else {
         const data = await res.json().catch(() => null);
-        alert(data?.error || `Failed to delete article (HTTP ${res.status}).`);
+        toast.error("Delete Failed", data?.error || `Failed to delete article (HTTP ${res.status}).`);
       }
     } catch {
-      alert("Network error while deleting article.");
+      toast.error("Network Error", "Could not delete article. Please try again.");
     } finally {
       setIsDeleting(false);
     }

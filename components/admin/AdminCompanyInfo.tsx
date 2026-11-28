@@ -18,6 +18,7 @@ import {
   Navigation,
 } from "lucide-react";
 import { CompanyInfo } from "@/lib/company/types";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface FieldProps {
   fieldKey: keyof CompanyInfo;
@@ -34,6 +35,7 @@ interface FieldProps {
 type TabType = "contact" | "whatsapp" | "location";
 
 export function AdminCompanyInfo() {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("contact");
@@ -66,27 +68,30 @@ export function AdminCompanyInfo() {
   const [fieldSuccess, setFieldSuccess] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    fetchCompanyData();
-  }, []);
-
-  const fetchCompanyData = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/admin/company");
-      if (res.ok) {
-        const data = await res.json();
-        if (data.info) {
-          setForm(data.info);
-          setOriginalForm(data.info);
+    const fetchCompanyData = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/admin/company");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.info) {
+            setForm(data.info);
+            setOriginalForm(data.info);
+          }
         }
+      } catch (err) {
+        console.error("Failed to load company info:", err);
+        const msg = "Could not fetch company info. Please refresh.";
+        setStatusMessage({ type: "error", text: msg });
+        toast.error("Load Failed", msg);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Failed to load company info:", err);
-      setStatusMessage({ type: "error", text: "Could not fetch company info. Please refresh." });
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchCompanyData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = (field: keyof CompanyInfo, value: string) => {
     setForm((prev) => {
@@ -122,19 +127,20 @@ export function AdminCompanyInfo() {
         body: JSON.stringify(form),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to update field.");
+        throw new Error(data?.error || "Failed to update field.");
       }
 
-      if (data.info) {
+      if (data?.info) {
         setForm(data.info);
         setOriginalForm(data.info);
       }
 
       setEditingFields((prev) => ({ ...prev, [key]: false }));
       setFieldSuccess((prev) => ({ ...prev, [key]: true }));
+      toast.success("Company Info Updated", "Changes have been saved successfully.");
 
       setTimeout(() => {
         setFieldSuccess((prev) => ({ ...prev, [key]: false }));
@@ -142,6 +148,7 @@ export function AdminCompanyInfo() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error saving field.";
       setStatusMessage({ type: "error", text: msg });
+      toast.error("Update Failed", msg);
     } finally {
       setSavingFields((prev) => ({ ...prev, [key]: false }));
     }

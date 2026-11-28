@@ -4,6 +4,7 @@ import "./globals.css";
 import { PublicSiteChrome } from "@/components/layout/PublicSiteChrome";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { InspectionModalProvider } from "@/components/providers/InspectionModalProvider";
+import { ToastProvider } from "@/components/providers/ToastProvider";
 
 const bakbakOne = localFont({
   src: "./fonts/Bakbak_One/BakbakOne-Regular.ttf",
@@ -178,11 +179,13 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans overflow-x-clip" suppressHydrationWarning>
         <SmoothScrollProvider>
-          <InspectionModalProvider>
-            <PublicSiteChrome>
-              {children}
-            </PublicSiteChrome>
-          </InspectionModalProvider>
+          <ToastProvider>
+            <InspectionModalProvider>
+              <PublicSiteChrome>
+                {children}
+              </PublicSiteChrome>
+            </InspectionModalProvider>
+          </ToastProvider>
         </SmoothScrollProvider>
       </body>
     </html>

@@ -3,9 +3,10 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { useLenis } from "./SmoothScrollProvider";
-import { X, CheckCircle2, Phone, MapPin, User, Clock, ShieldCheck, ArrowRight, Loader2, Wrench } from "lucide-react";
+import { X, CheckCircle2, AlertCircle, Phone, MapPin, User, Clock, ShieldCheck, ArrowRight, Loader2, Wrench } from "lucide-react";
 import { FormInput, FormSelect, FormTextarea, KERALA_DISTRICTS, ROOFING_SERVICES } from "@/components/ui/FormField";
 import { contactInfo } from "@/data/contact";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface InspectionModalContextType {
   isOpen: boolean;
@@ -24,9 +25,11 @@ export function useInspectionModal() {
 }
 
 export function InspectionModalProvider({ children }: { children: React.ReactNode }) {
+  const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [whatsappUrl, setWhatsappUrl] = useState("");
 
   const [formData, setFormData] = useState({
@@ -42,6 +45,7 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
   const openModal = useCallback((defaultService?: string) => {
     setIsSuccess(false);
     setIsSubmitting(false);
+    setFormError(null);
     setWhatsappUrl("");
     setFormData((prev) => ({
       ...prev,
@@ -92,22 +96,39 @@ export function InspectionModalProvider({ children }: { children: React.ReactNod
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    if (formError) setFormError(null);
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone) {
+    setFormError(null);
+
+    const trimmedName = formData.name.trim();
+    const phoneDigits = formData.phone.replace(/\D/g, "");
+
+    if (!trimmedName) {
+      const msg = "Please enter your full name so we know who to ask for.";
+      setFormError(msg);
+      toast.error("Name Required", msg);
       return;
     }
+
+    if (phoneDigits.length < 10) {
+      const msg = "Please enter a valid 10-digit phone or WhatsApp number.";
+      setFormError(msg);
+      toast.error("Valid Phone Required", msg);
+      return;
+    }
+
     setIsSubmitting(true);
 
     const waMessage = `*Free Site Inspection Request - WELTRIQ*
-• *Name:* ${formData.name}
-• *Phone:* ${formData.phone}
+• *Name:* ${trimmedName}
+• *Phone:* ${formData.phone.trim()}
 ${formData.district ? `• *District:* ${formData.district}` : ""}
 ${formData.service ? `• *Service:* ${formData.service}` : ""}
-${formData.notes ? `• *Notes:* ${formData.notes}` : ""}`;
+${formData.notes ? `• *Notes:* ${formData.notes.trim()}` : ""}`;
 
     const targetPhone = contactInfo.whatsappNumber || "918136983928";
     const waLink = `https://wa.me/${targetPhone}?text=${encodeURIComponent(waMessage)}`;
@@ -119,11 +140,11 @@ ${formData.notes ? `• *Notes:* ${formData.notes}` : ""}`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formData.name,
-          phone: formData.phone,
+          name: trimmedName,
+          phone: formData.phone.trim(),
           district: formData.district,
           service: formData.service,
-          message: formData.notes,
+          message: formData.notes.trim(),
           source: "Inspection Modal",
         }),
       });
@@ -138,6 +159,10 @@ ${formData.notes ? `• *Notes:* ${formData.notes}` : ""}`;
 
     setIsSubmitting(false);
     setIsSuccess(true);
+    toast.success(
+      "Inspection Request Sent!",
+      `Thank you, ${trimmedName}. Our engineer will contact you within 24 hours.`
+    );
   };
 
   return (
@@ -182,7 +207,7 @@ ${formData.notes ? `• *Notes:* ${formData.notes}` : ""}`;
               {isSuccess ? (
                 /* SUCCESS STATE */
                 <div className="py-4 sm:py-6 flex flex-col items-center text-center space-y-4 sm:space-y-5 animate-in fade-in duration-300">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-brand-navy/5 border border-brand-navy/15 flex items-center justify-center text-brand-navy">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-brand-yellow/20 border border-brand-yellow/40 flex items-center justify-center text-brand-navy shadow-xs">
                     <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 stroke-[2.2]" />
                   </div>
 
@@ -240,8 +265,19 @@ ${formData.notes ? `• *Notes:* ${formData.notes}` : ""}`;
                     </p>
                   </div>
 
+                  {/* Validation Error Alert */}
+                  {formError && (
+                    <div
+                      role="alert"
+                      className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200/90 text-red-800 text-xs font-sans font-medium flex items-start gap-2.5 animate-in fade-in duration-200"
+                    >
+                      <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                      <span>{formError}</span>
+                    </div>
+                  )}
+
                   {/* Form */}
-                  <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4 font-[system-ui,sans-serif]">
+                  <form onSubmit={handleSubmit} noValidate className="space-y-3.5 sm:space-y-4 font-[system-ui,sans-serif]">
                     {/* Full Name */}
                     <FormInput
                       label="Full Name"

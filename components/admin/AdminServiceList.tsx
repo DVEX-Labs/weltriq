@@ -6,12 +6,14 @@ import Image from "next/image";
 import { Plus, Search, Edit, Trash2, Layers, AlertCircle, AlertTriangle, X } from "lucide-react";
 import { ManagedService } from "@/lib/services/types";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface AdminServiceListProps {
   initialServices: ManagedService[];
 }
 
 export function AdminServiceList({ initialServices }: AdminServiceListProps) {
+  const toast = useToast();
   const [services, setServices] = useState<ManagedService[]>(initialServices);
   const [search, setSearch] = useState("");
   const [deletingService, setDeletingService] = useState<ManagedService | null>(null);
@@ -28,6 +30,7 @@ export function AdminServiceList({ initialServices }: AdminServiceListProps) {
 
     setIsDeleting(true);
     setErrorMessage(null);
+    const removedTitle = deletingService.title;
 
     try {
       const res = await fetch(`/api/admin/services?id=${encodeURIComponent(deletingService.id)}`, {
@@ -35,14 +38,17 @@ export function AdminServiceList({ initialServices }: AdminServiceListProps) {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to delete service.");
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || `Failed to delete service (HTTP ${res.status}).`);
       }
 
       setServices((prev) => prev.filter((s) => s.id !== deletingService.id));
       setDeletingService(null);
+      toast.success("Service Removed", `"${removedTitle}" has been removed from the deck.`);
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : "Failed to delete service.");
+      const msg = err instanceof Error ? err.message : "Failed to delete service.";
+      setErrorMessage(msg);
+      toast.error("Delete Failed", msg);
     } finally {
       setIsDeleting(false);
     }
