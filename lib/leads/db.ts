@@ -1,39 +1,19 @@
-import fs from "fs";
 import path from "path";
 import crypto from "crypto";
+import { readJsonStore, writeJsonStore } from "@/lib/storage/kv";
 import { LeadEnquiry, CreateLeadInput } from "./types";
 
 export * from "./types";
 
 const DATA_FILE_PATH = path.join(process.cwd(), "data", "leads.json");
-let writeLock = Promise.resolve();
+const REDIS_KEY = "weltriq:leads";
 
 export async function readAllLeads(): Promise<LeadEnquiry[]> {
-  try {
-    if (!fs.existsSync(DATA_FILE_PATH)) {
-      return [];
-    }
-    const data = await fs.promises.readFile(DATA_FILE_PATH, "utf8");
-    return JSON.parse(data || "[]") as LeadEnquiry[];
-  } catch (error) {
-    console.error("Error reading leads data:", error);
-    return [];
-  }
+  return readJsonStore<LeadEnquiry[]>(REDIS_KEY, DATA_FILE_PATH, []);
 }
 
 async function writeAllLeads(leads: LeadEnquiry[]): Promise<void> {
-  const op = async () => {
-    const dir = path.dirname(DATA_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      await fs.promises.mkdir(dir, { recursive: true });
-    }
-    const tempFile = `${DATA_FILE_PATH}.${Date.now()}.${crypto.randomBytes(4).toString("hex")}.tmp`;
-    await fs.promises.writeFile(tempFile, JSON.stringify(leads, null, 2), "utf8");
-    await fs.promises.rename(tempFile, DATA_FILE_PATH);
-  };
-
-  writeLock = writeLock.then(op, op);
-  return writeLock;
+  return writeJsonStore<LeadEnquiry[]>(REDIS_KEY, DATA_FILE_PATH, leads);
 }
 
 export async function saveLead(input: CreateLeadInput): Promise<LeadEnquiry> {

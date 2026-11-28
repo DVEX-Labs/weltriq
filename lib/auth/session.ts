@@ -79,7 +79,7 @@ export function verifySessionToken(token: string | undefined): { valid: boolean;
 /**
  * Validate submitted credentials
  */
-export function validateAdminCredentials(username: string, password: string): boolean {
+export async function validateAdminCredentials(username: string, password: string): Promise<boolean> {
   return checkAdminCredentials(username, password);
 }
 

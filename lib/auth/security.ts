@@ -1,8 +1,9 @@
-import fs from "fs";
 import path from "path";
 import crypto from "crypto";
+import { readOptionalJsonStore, writeJsonStore } from "@/lib/storage/kv";
 
 const SECURITY_FILE_PATH = path.join(process.cwd(), "data", "admin-security.json");
+const REDIS_KEY = "weltriq:security";
 const DEFAULT_ADMIN_USER = process.env.ADMIN_USERNAME || "admin";
 const DEFAULT_ADMIN_PASS = process.env.ADMIN_PASSWORD || "weltriq2026!";
 
@@ -21,27 +22,18 @@ export function hashPassword(password: string, salt: string): string {
 }
 
 /**
- * Get the stored admin credentials, or null if using default environment values
+ * Get the stored admin credentials from Redis / local JSON, or null if using default env values
  */
-export function getStoredSecurityRecord(): SecurityRecord | null {
-  try {
-    if (!fs.existsSync(SECURITY_FILE_PATH)) {
-      return null;
-    }
-    const data = fs.readFileSync(SECURITY_FILE_PATH, "utf8");
-    return JSON.parse(data || "{}") as SecurityRecord;
-  } catch (error) {
-    console.error("Error reading admin security record:", error);
-    return null;
-  }
+export async function getStoredSecurityRecord(): Promise<SecurityRecord | null> {
+  return readOptionalJsonStore<SecurityRecord>(REDIS_KEY, SECURITY_FILE_PATH);
 }
 
 /**
- * Synchronous credential check used during login
+ * Credential check used during login and password updates
  */
-export function checkAdminCredentials(username: string, password: string): boolean {
+export async function checkAdminCredentials(username: string, password: string): Promise<boolean> {
   const trimmedUser = username.trim();
-  const record = getStoredSecurityRecord();
+  const record = await getStoredSecurityRecord();
 
   if (record && record.passwordHash && record.salt) {
     if (trimmedUser !== record.username) return false;
@@ -67,10 +59,10 @@ export async function updateAdminPassword(
   newPassword: string
 ): Promise<{ success: boolean; error?: string }> {
   // 1. Verify current credentials
-  const currentRecord = getStoredSecurityRecord();
+  const currentRecord = await getStoredSecurityRecord();
   const username = currentRecord?.username || process.env.ADMIN_USERNAME || DEFAULT_ADMIN_USER;
 
-  const isCurrentValid = checkAdminCredentials(username, currentPassword);
+  const isCurrentValid = await checkAdminCredentials(username, currentPassword);
   if (!isCurrentValid) {
     return { success: false, error: "Current password does not match. Please verify and try again." };
   }
@@ -91,16 +83,8 @@ export async function updateAdminPassword(
     updatedAt: new Date().toISOString(),
   };
 
-  // 4. Save safely to file
-  const dir = path.dirname(SECURITY_FILE_PATH);
-  if (!fs.existsSync(dir)) {
-    await fs.promises.mkdir(dir, { recursive: true });
-  }
-
-  const tempFile = `${SECURITY_FILE_PATH}.${Date.now()}.tmp`;
-  await fs.promises.writeFile(tempFile, JSON.stringify(updatedRecord, null, 2), "utf8");
-  await fs.promises.rename(tempFile, SECURITY_FILE_PATH);
+  // 4. Persist to Redis / local storage
+  await writeJsonStore<SecurityRecord>(REDIS_KEY, SECURITY_FILE_PATH, updatedRecord);
 
   return { success: true };
 }
-

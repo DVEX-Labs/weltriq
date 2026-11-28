@@ -98,11 +98,11 @@ export function AdminBlogList({ initialArticles }: AdminBlogListProps) {
         setDeletingId(null);
         router.refresh();
       } else {
-        const data = await res.json();
-        alert(data.error || "Failed to delete article.");
+        const data = await res.json().catch(() => null);
+        alert(data?.error || `Failed to delete article (HTTP ${res.status}).`);
       }
     } catch {
-      alert("Error deleting article.");
+      alert("Network error while deleting article.");
     } finally {
       setIsDeleting(false);
     }

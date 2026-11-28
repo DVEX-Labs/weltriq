@@ -84,9 +84,9 @@ export function AdminBlogForm({ initialData, isEditing = false }: AdminBlogFormP
         body: formData,
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        setError(data.error || "Image upload failed.");
+        setError(data?.error || `Image upload failed (HTTP ${res.status}).`);
       } else {
         setCoverImage(data.url);
       }
@@ -153,9 +153,9 @@ export function AdminBlogForm({ initialData, isEditing = false }: AdminBlogFormP
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        setError(data.error || "Failed to save article.");
+        setError(data?.error || `Failed to save article (HTTP ${res.status}).`);
         setSaving(false);
         return;
       }

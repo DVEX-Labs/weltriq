@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
+import { put } from "@vercel/blob";
 import { isAuthenticatedAdmin } from "@/lib/auth/session";
+import { isServerlessReadOnlyEnv } from "@/lib/storage/kv";
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -47,8 +49,28 @@ export async function POST(request: NextRequest) {
       .slice(0, 30);
 
     const randomSuffix = crypto.randomBytes(4).toString("hex");
-    const filename = `${safeBase}-${Date.now()}-${randomSuffix}.${ext}`;
+    const filename = `${safeBase || "image"}-${Date.now()}-${randomSuffix}.${ext}`;
 
+    // Production / Cloud: Use Vercel Blob when configured
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const blob = await put(`blogs/${filename}`, buffer, {
+        access: "public",
+        contentType: file.type,
+      });
+      return NextResponse.json({ url: blob.url, success: true });
+    }
+
+    if (isServerlessReadOnlyEnv()) {
+      return NextResponse.json(
+        {
+          error:
+            "Vercel Blob storage is not connected. Add a Blob Store in your Vercel Storage dashboard to upload images on the live site.",
+        },
+        { status: 500 }
+      );
+    }
+
+    // Local development fallback: save under public/uploads/blogs
     const uploadDir = path.join(process.cwd(), "public", "uploads", "blogs");
     if (!fs.existsSync(uploadDir)) {
       await fs.promises.mkdir(uploadDir, { recursive: true });

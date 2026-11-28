@@ -59,8 +59,14 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: "Lead ID is required." }, { status: 400 });
   }
 
-  const deleted = await deleteLead(id);
-  return NextResponse.json({ success: deleted });
+  try {
+    const deleted = await deleteLead(id);
+    return NextResponse.json({ success: deleted });
+  } catch (error: unknown) {
+    console.error("Delete lead error:", error);
+    const message = error instanceof Error ? error.message : "Failed to delete lead.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
 
 // Admin only: Update lead status

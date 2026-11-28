@@ -98,11 +98,17 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: "Service ID is required." }, { status: 400 });
   }
 
-  const success = await deleteService(id);
-  if (!success) {
-    return NextResponse.json({ error: "Service not found." }, { status: 404 });
-  }
+  try {
+    const success = await deleteService(id);
+    if (!success) {
+      return NextResponse.json({ error: "Service not found." }, { status: 404 });
+    }
 
-  return NextResponse.json({ success: true, message: "Service deleted successfully." });
+    return NextResponse.json({ success: true, message: "Service deleted successfully." });
+  } catch (error: unknown) {
+    console.error("Delete service error:", error);
+    const message = error instanceof Error ? error.message : "Failed to delete service.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
 

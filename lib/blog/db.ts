@@ -1,7 +1,8 @@
-import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 import { revalidatePath } from "next/cache";
+import { del } from "@vercel/blob";
+import { readJsonStore, writeJsonStore } from "@/lib/storage/kv";
 import {
   BlogArticle,
   BlogListQuery,
@@ -16,38 +17,28 @@ import {
 } from "./config";
 
 const DATA_FILE_PATH = path.join(process.cwd(), "data", "blogs.json");
-
-// In-process lock to prevent concurrent write collisions
-let writeLock = Promise.resolve();
+const REDIS_KEY = "weltriq:blogs";
 
 async function readAllArticles(): Promise<BlogArticle[]> {
+  return readJsonStore<BlogArticle[]>(REDIS_KEY, DATA_FILE_PATH, []);
+}
+
+function revalidateBlogRoutes(slugs: string[]): void {
   try {
-    if (!fs.existsSync(DATA_FILE_PATH)) {
-      await fs.promises.mkdir(path.dirname(DATA_FILE_PATH), { recursive: true });
-      await fs.promises.writeFile(DATA_FILE_PATH, JSON.stringify([], null, 2), "utf8");
-      return [];
+    revalidatePath("/");
+    revalidatePath("/blog");
+    revalidatePath("/admin");
+    revalidatePath("/admin/blogs");
+    for (const slug of slugs) {
+      if (slug) revalidatePath(`/blog/${slug}`);
     }
-    const data = await fs.promises.readFile(DATA_FILE_PATH, "utf8");
-    return JSON.parse(data || "[]") as BlogArticle[];
-  } catch (error) {
-    console.error("Error reading blogs data:", error);
-    return [];
+  } catch {
+    // revalidatePath may throw outside request context
   }
 }
 
 async function writeAllArticles(articles: BlogArticle[]): Promise<void> {
-  const op = async () => {
-    const dir = path.dirname(DATA_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      await fs.promises.mkdir(dir, { recursive: true });
-    }
-    const tempFile = `${DATA_FILE_PATH}.${Date.now()}.${crypto.randomBytes(4).toString("hex")}.tmp`;
-    await fs.promises.writeFile(tempFile, JSON.stringify(articles, null, 2), "utf8");
-    await fs.promises.rename(tempFile, DATA_FILE_PATH);
-  };
-
-  writeLock = writeLock.then(op, op);
-  return writeLock;
+  return writeJsonStore<BlogArticle[]>(REDIS_KEY, DATA_FILE_PATH, articles);
 }
 
 /**
@@ -252,12 +243,7 @@ export async function createArticle(
 
   articles.push(newArticle);
   await writeAllArticles(articles);
-
-  // Invalidate public and admin routes
-  revalidatePath("/");
-  revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
-  revalidatePath("/admin/blogs");
+  revalidateBlogRoutes([slug]);
 
   return newArticle;
 }
@@ -313,15 +299,7 @@ export async function updateArticle(
 
   articles[index] = updated;
   await writeAllArticles(articles);
-
-  // Invalidate public and admin routes
-  revalidatePath("/");
-  revalidatePath("/blog");
-  revalidatePath(`/blog/${existing.slug}`);
-  if (slug !== existing.slug) {
-    revalidatePath(`/blog/${slug}`);
-  }
-  revalidatePath("/admin/blogs");
+  revalidateBlogRoutes(slug !== existing.slug ? [existing.slug, slug] : [existing.slug]);
 
   return updated;
 }
@@ -340,11 +318,19 @@ export async function deleteArticle(id: string): Promise<boolean> {
   const removed = articles.splice(index, 1)[0];
   await writeAllArticles(articles);
 
-  // Invalidate public and admin routes
-  revalidatePath("/");
-  revalidatePath("/blog");
-  revalidatePath(`/blog/${removed.slug}`);
-  revalidatePath("/admin/blogs");
+  // Clean up Vercel Blob cover image if hosted there
+  if (
+    process.env.BLOB_READ_WRITE_TOKEN &&
+    removed.coverImage?.includes(".blob.vercel-storage.com")
+  ) {
+    try {
+      await del(removed.coverImage);
+    } catch (blobErr) {
+      console.warn("Failed to delete old blob image:", blobErr);
+    }
+  }
+
+  revalidateBlogRoutes([removed.slug]);
 
   return true;
 }

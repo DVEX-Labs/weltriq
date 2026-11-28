@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
   }
 
-  const record = getStoredSecurityRecord();
+  const record = await getStoredSecurityRecord();
   const username = record?.username || process.env.ADMIN_USERNAME || "admin";
   const lastUpdated = record?.updatedAt || null;
 

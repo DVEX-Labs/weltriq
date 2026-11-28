@@ -1,7 +1,6 @@
-import fs from "fs";
 import path from "path";
-import crypto from "crypto";
 import { revalidatePath } from "next/cache";
+import { readJsonStore, writeJsonStore } from "@/lib/storage/kv";
 import {
   ManagedService,
   CreateServiceInput,
@@ -12,34 +11,14 @@ import {
 export * from "./types";
 
 const DATA_FILE_PATH = path.join(process.cwd(), "data", "services.json");
-let writeLock = Promise.resolve();
+const REDIS_KEY = "weltriq:services";
 
 export async function readAllServices(): Promise<ManagedService[]> {
-  try {
-    if (!fs.existsSync(DATA_FILE_PATH)) {
-      return [];
-    }
-    const data = await fs.promises.readFile(DATA_FILE_PATH, "utf8");
-    return JSON.parse(data || "[]") as ManagedService[];
-  } catch (error) {
-    console.error("Error reading services data:", error);
-    return [];
-  }
+  return readJsonStore<ManagedService[]>(REDIS_KEY, DATA_FILE_PATH, []);
 }
 
 async function writeAllServices(services: ManagedService[]): Promise<void> {
-  const op = async () => {
-    const dir = path.dirname(DATA_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      await fs.promises.mkdir(dir, { recursive: true });
-    }
-    const tempFile = `${DATA_FILE_PATH}.${Date.now()}.${crypto.randomBytes(4).toString("hex")}.tmp`;
-    await fs.promises.writeFile(tempFile, JSON.stringify(services, null, 2), "utf8");
-    await fs.promises.rename(tempFile, DATA_FILE_PATH);
-  };
-
-  writeLock = writeLock.then(op, op);
-  return writeLock;
+  return writeJsonStore<ManagedService[]>(REDIS_KEY, DATA_FILE_PATH, services);
 }
 
 function generateServiceId(title: string): string {

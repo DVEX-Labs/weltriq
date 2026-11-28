@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const isValid = validateAdminCredentials(username, password);
+    const isValid = await validateAdminCredentials(username, password);
     if (!isValid) {
       return NextResponse.json(
         { error: "Invalid username or password." },
